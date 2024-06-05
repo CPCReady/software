@@ -68,10 +68,10 @@ def count_total_kilobytes_in_folder(folder_path):
 
 
 def show_files_in_image_disc():
-    print("Files in image disc:")
-    image = function.replace_spaces_with_underscore(function.get_value_cpcready("disc"))
+    ## Muestra el contenido e una imagen de disco
+    image = function.get_value_cpcready("disc")
+    print_formatted_text(HTML(f"\nDrive A: {function.get_value_cpcready("disc")}"))
     DISC_IMAGE = var.PWD + var.OUT_FOLDER + image
     cat_image_disc(DISC_IMAGE)
-    total_bytes = count_total_kilobytes_in_folder(var.FILES_FOLDER)
-    print(f"Total bytes: {total_bytes}")
-    print_formatted_text(HTML(f"<ansigreen>See</ansigreen><ansiblue> https://github.com/CPCReady/software</ansiblue><ansigreen> for more information.</ansigreen>"))
+    total_bytes_free = 178 - count_total_kilobytes_in_folder(var.FILES_FOLDER)
+    print_formatted_text(HTML(f"\n{str(total_bytes_free)}K free"))
