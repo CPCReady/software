@@ -151,5 +151,6 @@ def create_image_disc_from_files(file):
         remove_comments_from_bas_files(var.SRC_FOLDER + "/" + file, var.FILES_FOLDER + "/" + file)
         convert_file_to_dos(var.SRC_FOLDER + "/" + file, var.FILES_FOLDER + "/" + file)
         add_file_ascii_disk_image(var.OUT_FOLDER + image, var.FILES_FOLDER + "/" + file)
+        print_formatted_text(HTML(f"<ansiwhite>--------------------------------------------------------</ansiwhite>")) 
     print_formatted_text(HTML(f"<ansigreen>Successfully generated disk image</ansigreen>"))
     print_formatted_text(HTML(f"<ansiwhite>--------------------------------------------------------</ansiwhite>"))
