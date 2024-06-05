@@ -85,7 +85,7 @@ main.add_command(run)
 def lcat():
     """Displays the contents of the disk image."""
     function.is_cpcready_project()
-    click.echo('No param provided.')
+    command_lcat.show_files_in_image_disc()
 main.add_command(lcat)
 
 @click.command()
