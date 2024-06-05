@@ -63,10 +63,7 @@ main.add_command(about)
 def save(file):
     """Generates disk image with the project files. If no FILE is provided, it will generate a entire project disk image."""
     function.is_cpcready_project()
-    if file:
-        click.echo(f'Param: {file}')
-    else:
-        click.echo('No param provided.')
+    command_save.create_image_disc_from_files(file)
 main.add_command(save)
 
 

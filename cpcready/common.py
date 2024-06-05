@@ -56,7 +56,27 @@ def get_os_type():
     else:
         message_error(f"Unsupported OS: {os_type}")
         exit(1)
+        
+def get_filename_from_path(file_path):
+    """Devuelve el nombre de fichero.
 
+    Args:
+        file_path (str): path del fichero.
+    """
+    return os.path.basename(file_path)
+
+def message_compilation(text, result):
+    """Mostrar mensaje de compilacion.
+
+    Args:
+        text (str): Texto del mensaje.
+    """
+    if result == "OK":
+        print_formatted_text(HTML(f"<ansiwhite>[</ansiwhite><ansigreen><bold>  OK  </bold></ansigreen><ansiwhite>] {text}</ansiwhite>"))
+    elif result == "WARNING":
+        print_formatted_text(HTML(f"<ansiwhite>[</ansiwhite><ansiyellow><bold>WARNING</bold></ansiyellow><ansiwhite>] {text}</ansiwhite>"))
+    elif result == "ERROR":
+        print_formatted_text(HTML(f"<ansiwhite>[</ansiwhite><ansired><bold> ERROR </bold></ansired><ansiwhite>] {text}</ansiwhite>"))
 
 def message_error(text, format="normal"):
     """Mostrar mensaje de error.

@@ -41,8 +41,8 @@ def cat_image_disc(name):
         name (str): nombre de la imagen de disco.
     """
     ## Comando para crear la imagen de disco
-    COMMAND = var.IDSK_TOOL + f" {name} -l "
-    proceso = subprocess.run(COMMAND, shell=True, capture_output=True, text=True)
+    COMMAND = var.IDSK_TOOL + f" {name} -l | sed 's/:/ /g' | sed 's/Ko//g'"
+    proceso = subprocess.run(COMMAND, shell=True)
 
     # Verificar la salida y posibles errores
     if not proceso.returncode == 0:
