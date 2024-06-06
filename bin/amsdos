@@ -26,10 +26,9 @@
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##------------------------------------------------------------------------------
 
-## Bash Include files
-
+## define variables y carga funciones
 HOMEBREW_PREFIX=$(brew --prefix)
-source $HOMEBREW_PREFIX/lib/cpcLib.sh
+source $HOMEBREW_PREFIX/bin/cpc.lib
 
 # # Obtener la versión de Python 3
 # PYTHON_VERSION=$(python3 --version 2>&1)

@@ -25,9 +25,10 @@
 ##  You should have received a copy of the GNU Lesser General Public License
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##------------------------------------------------------------------------------
-##  Bash Include files
+
+## define variables y carga funciones
 HOMEBREW_PREFIX=$(brew --prefix)
-source $HOMEBREW_PREFIX/lib/cpcLib.sh
+source $HOMEBREW_PREFIX/bin/cpc.lib
 
 ## Function to display help message
 function show_help {
