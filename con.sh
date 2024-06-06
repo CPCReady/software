@@ -19,10 +19,14 @@ function main {
     local comando
     local parametros
     local input
+    local historial=()
 
     while true; do
         # Mostrar el prompt
         read -p "Ready " input
+        
+        # Guardar el comando en el historial
+        historial+=("$input")
         
         # Separar el comando y los parámetros
         comando=$(echo $input | awk '{print $1}')
