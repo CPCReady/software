@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "Uso: cpc <comando>"
+echo
+echo "Comandos disponibles:"
+echo "  use <nombre>   Ejecuta la acción 'use' con el parámetro dado."
+echo "  help           Muestra esta ayuda."

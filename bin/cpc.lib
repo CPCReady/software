@@ -62,6 +62,38 @@ PATH_CONFIG_PROJECT="cfg"
 CONFIG_CPCREADY="CPCReady.cfg"
 CONFIG_CPCEMU="CPCEmu.cfg"
 
+##
+## Reemplaza espacios por _ 
+##
+##   Args:
+##       file (str): nombre de fichero
+
+replace_spaces() {
+    local input_string="$1"
+    local output_string="${input_string// /_}"
+    echo "$output_string"
+}
+
+##
+## Verifica si estamos en un proyecto CPCReady 
+##
+##   Args:
+##       file (str): nombre de fichero
+
+function is_cpcready_project {
+   if [ ! -f "$CONFIG_CPCREADY" ]; then
+      echo -e "${RED}\nThis software can only be used in a CPCReady project.${NORMAL}"
+      exit 1
+   fi
+}
+
+
+
+
+
+
+
+
 
 function show_version {
    CPCREADY
@@ -77,14 +109,7 @@ function ready {
    echo
 }
 
-## Función para verificar si existe el archivo
-## CPCReady en el directorio actual
-function check_env_file {
-   if [ ! -f "$CONFIG_CPCREADY" ]; then
-      echo
-      PRINT "ERROR" "El archivo $PATH_CONFIG_PROJECT/$CONFIG_CPCREADY no existe en este directorio."
-   fi
-}
+
 
 # ## informacion finalizacion tarea ok
 # ## $1 : descripcion tarea

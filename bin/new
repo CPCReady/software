@@ -32,11 +32,10 @@ source $HOMEBREW_PREFIX/bin/cpc.lib
 
 # Function to display help message
 function show_help {
-    
-    CPCREADY
-    echo "Create new CPCReady project."
+
+    echo "Create a CPCReady project."
     echo 
-    echo "Use: $(basename "$0") [option]"
+    echo "Use: $(basename "$0") [option] Project Name"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
     ready
@@ -46,7 +45,6 @@ function show_help {
 case $1 in
     -v|--version)
         show_version
-        ready
         exit 0
         ;;
     -h|--help)
@@ -55,15 +53,16 @@ case $1 in
         ;;
 esac
 
-## Show logo
-CPCREADY
+# Verifica si se ha pasado el nombre de proyecto
+if [ -z "$1" ]; then
+    echo -e "\nNot enough arguments (missing: "Project Name")"
+    show_help
+    exit 1
+fi
 
-PRINT "TITLE" "Create New Project."
 
 if [ -e ./"$CONFIG_CPCREADY" ]; then
-    echo
-    PRINT "ERROR_NO_EXIT" "The "$CONFIG_CPCREADY" file exists in the current path."
-    ready
+    echo -e "\nProject {project} already exists."
     exit
 fi
 

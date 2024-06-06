@@ -61,6 +61,7 @@ check_env_file
 source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
 
 show_version
+#CPCReady: A tool to prepare your CPC project from Visual Studio Code
 echo "${WHITE}${BOLD}© Destroyer 2024 - destroyer.dcf@gmail.com${NORMAL}"
 echo "${WHITE}${BOLD}https://github.com/destroyer-dcf/CPCReady${NORMAL}"
 
