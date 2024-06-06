@@ -1,0 +1,125 @@
+#!/bin/bash
+##------------------------------------------------------------------------------
+##
+##        ██████╗██████╗  ██████╗██████╗ ███████╗ █████╗ ██████╗ ██╗   ██╗
+##       ██╔════╝██╔══██╗██╔════╝██╔══██╗██╔════╝██╔══██╗██╔══██╗╚██╗ ██╔╝
+##       ██║     ██████╔╝██║     ██████╔╝█████╗  ███████║██║  ██║ ╚████╔╝ 
+##       ██║     ██╔═══╝ ██║     ██╔══██╗██╔══╝  ██╔══██║██║  ██║  ╚██╔╝  
+##       ╚██████╗██║     ╚██████╗██║  ██║███████╗██║  ██║██████╔╝   ██║   
+##        ╚═════╝╚═╝      ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   
+##
+##-----------------------------LICENSE NOTICE------------------------------------
+##  This file is part of CPCReady Basic programation.
+##  Copyright (C) 2024 Destroyer
+##
+##  This program is free software: you can redistribute it and/or modify
+##  it under the terms of the GNU Lesser General Public License as published by
+##  the Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  This program is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU Lesser General Public License for more details.
+##
+##  You should have received a copy of the GNU Lesser General Public License
+##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##------------------------------------------------------------------------------
+
+## Bash Include files
+HOMEBREW_PREFIX=$(brew --prefix)
+source $HOMEBREW_PREFIX/lib/cpcLib.sh
+
+## Function to display help message
+function show_help {
+
+    CPCREADY
+    echo "Create disk image with project files."
+    echo 
+    echo "Use: $(basename "$0") [option]"
+    echo "  -h, --help     Show this help message."
+    echo "  -v, --version  Show version this software."
+    echo "Option:"
+    echo "  [parameter] File name. If there is no parameter,"
+    echo "              it creates a dsk image with all the "
+    echo "              contents of the src folder."
+}
+
+## Check if the help parameter is provided
+case $1 in
+    -v|--version)
+        show_version
+        exit 0
+        ;;
+    -h|--help)
+        show_help
+        exit 0
+        ;;
+esac
+
+## Chequeamos si existe el archivo de variables.
+## si no existe salimos con error
+check_env_file
+
+## Cargamos archivo de variables
+source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
+
+## chequeamos nomenclatura
+check_83_files_path $IN_BAS
+
+## Crete folder out
+mkdir -p "$OUT"
+mkdir -p "$OUT_DISC"
+
+PATH_DISC="$OUT_DISC/$DISC"
+
+if [[ "$EMULATOR" == "rvm" ]]; then
+    ## Create image disk
+    PRINT "TAG" "DISC"
+    create_dsk "$PATH_DISC"
+fi
+
+if [[ "$EMULATOR" == "m4" ]]; then
+    ## Create image disk
+    PRINT "TAG" "M4 Board"
+    rm -rf "$OUT"
+    mkdir -p "$OUT"
+    PRINT OK "Delete SD path"
+fi
+
+# si no pasamos parametro asumimos que hay que crear 
+# la imagen DSK de todos los archivos de src
+if [ -z "$1" ]; then
+    ## Add files BAS to disk image
+    for archivo in "$IN_BAS"/*.BAS "$IN_BAS"/*.bas; do
+        if [ -f "$archivo" ]; then
+            file=$(basename "$archivo")
+            PRINT "TAG" "$file"
+            ## delete comments in bas files
+            rm_comments "$archivo" "$OUT/$file"
+            ## convert unix2dos
+            unix2dos "$OUT/$file" >/dev/null 2>&1; PRINT "OK" "Converting file to DOS format." || PRINT "ERROR" "There was a problem converting the file to DOS format."
+            ## add file to dsk image
+            if [[ "$EMULATOR" == "rvm" ]]; then
+                add_ascii_dsk "$PATH_DISC" "$OUT/$file"
+            fi
+        fi
+    done
+    exit 0
+else
+    if [ ! -e "$IN_BAS/$1" ]; then
+        PRINT "ERROR" "$1 not found."
+    fi
+    file=$(basename "$1")
+    PRINT "TAG" "$file"
+    ## delete comments in bas files
+    rm_comments "$IN_BAS/$1" "$OUT/$file"
+    ## convert unix2dos
+    unix2dos "$OUT/$file" >/dev/null 2>&1; PRINT "OK" "Converting file to DOS format." || PRINT "ERROR" "There was a problem converting the file to DOS format."
+    ## add file to dsk image
+    if [[ "$EMULATOR" == "rvm" ]]; then
+        add_ascii_dsk "$PATH_DISC" "$OUT/$file"
+    fi
+fi
+
+

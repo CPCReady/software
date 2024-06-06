@@ -1,4 +1,4 @@
-
+#!/bin/bash
 ##------------------------------------------------------------------------------
 ##
 ##        ██████╗██████╗  ██████╗██████╗ ███████╗ █████╗ ██████╗ ██╗   ██╗
@@ -25,23 +25,77 @@
 ##  You should have received a copy of the GNU Lesser General Public License
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##------------------------------------------------------------------------------
+##  Bash Include files
+HOMEBREW_PREFIX=$(brew --prefix)
+source $HOMEBREW_PREFIX/lib/cpcLib.sh
 
-from cpcready import variables as var
-from cpcready import common as function
-from cpcready import save as idsk
+## Function to display help message
+function show_help {
+    CPCREADY
+    echo "Change CPC Model."
+    echo 
+    echo "Use: $(basename "$0") [option]"
+    echo "  -h, --help     Show this help message."
+    echo "  -v, --version  Show version this software."
+    echo "Option:"
+    echo "  [parameter] Amstrad CPC Models. Options values [464,664,6128]."
+    echo "              If the parameter is empty, shows the"
+    echo "              current value."
+}
 
-def change_disc_image(image):
-    """Change the disc image.
+## Check if the help parameter is provided
+case $1 in
+    -v|--version)
+        show_version
+        exit 0
+        ;;
+    -h|--help)
+        show_help
+        exit 0
+        ;;
+esac
 
-    Args:
-        image (str): disc image
-    """
-    if image == None:
-        function.message_normal("\nDrive A: " + function.get_value_cpcready("disc"))
-        exit(0)
-    else:
-        image = function.replace_spaces_with_underscore(image)
-        DISC_IMAGE = var.PWD + var.OUT_FOLDER + image
-        idsk.create_disk_image(DISC_IMAGE)
-        function.update_value_cpcready("disc", image)
-        function.message_ok("\nChanged Drive A: " + image)
+## Chequeamos si existe el archivo de variables.
+## si no existe salimos con error
+check_env_file
+
+## Cargamos archivo de variables
+source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
+
+
+## Check if the parameter is empty
+if [ -z "$1" ]; then
+    evaluaCPCModel $MODEL
+    clear
+    model_cpc $MODEL
+    exit 0
+fi
+
+# Comprobamos Modelo CPC
+evaluaCPCModel $1
+
+case $1 in
+    "464")
+        MODEL=0
+        ;;
+    "664")
+        MODEL=1
+        ;;
+    "6128")
+        MODEL=2
+        ;;
+    *)
+        PRINT ERROR "CPC model $1 is not supported."
+        ;;
+esac
+
+cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCEMU" CPC_TYPE $MODEL
+cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" MODEL $1
+
+clear
+model_cpc $1
+
+
+
+
+

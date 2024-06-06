@@ -1,4 +1,4 @@
-
+#!/bin/bash
 ##------------------------------------------------------------------------------
 ##
 ##        ██████╗██████╗  ██████╗██████╗ ███████╗ █████╗ ██████╗ ██╗   ██╗
@@ -25,33 +25,58 @@
 ##  You should have received a copy of the GNU Lesser General Public License
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##------------------------------------------------------------------------------
+##  Bash Include files
+HOMEBREW_PREFIX=$(brew --prefix)
+source $HOMEBREW_PREFIX/lib/cpcLib.sh
 
-from cpcready import variables as var
-from cpcready import common as function
+## Function to display help message
+function show_help {
+    CPCREADY
+    echo "List files."
+    echo 
+    echo "Use: $(basename "$0") [option]"
+    echo "  -h, --help     Show this help message."
+    echo "  -v, --version  Show version this software."
+}
 
-def is_in_cpc_model(value):
-    """Comprueba si un valor está en la lista SCREEN_MODE.
+## Check if the help parameter is provided
+case $1 in
+    -v|--version)
+        show_version
+        exit 0
+        ;;
+    -h|--help)
+        show_help
+        exit 0
+        ;;
+esac
 
-    Args:
-        value (str): Valor a comprobar.
+## Chequeamos si existe el archivo de variables.
+## si no existe salimos con error
+check_env_file
 
-    Returns:
-        bool: True si el valor está en la lista, False en caso contrario.
-    """
-    return value in var.CPC_MODELS
+## Cargamos archivo de variables
+source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
 
-def change_cpc_model(model):
-    """Cambia el modo de imagen del proyecto.
+## list files dsk
+if [[ "$EMULATOR" == "rvm" ]]; then
+    ## chequeamos nomenclatura
+    check_83_files_path $OUT_DISC
+    total_KB=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g' | awk '{sum += $3} END {print sum}')
+    free_KB=$((178 - total))
+    echo -e "Drive A: $DISC"
+    exit_result=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g')
+    if [[ ! "$exit_result" =~ "Fichier image non supporter" ]]; then
+        echo "$exit_result"
+    fi
+    echo -e "\n${free_KB}K free"
+    exit 0
+fi
 
-    Args:
-        mode (str): modo de imagen
-    """
-    if model == None:
-        function.message_normal("\nCurrent CPC Model is: " + function.get_value_cpcready("model"))
-        exit(0)
-    else:
-        if is_in_cpc_model(model) == False:
-            function.message_error("\nSyntax Error\nInvalid CPC Model.")
-            exit(1)
-        function.update_value_cpcready("model", model)
-        function.message_ok("\nChanged CPC Model: " + model)
+## list files M4Board
+if [[ "$EMULATOR" == "m4" ]]; then
+    ## chequeamos nomenclatura
+    check_83_files_path $OUT
+    cat2cpc "$OUT"
+    exit 0
+fi

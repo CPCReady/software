@@ -1,4 +1,4 @@
-
+#!/bin/bash
 ##------------------------------------------------------------------------------
 ##
 ##        ██████╗██████╗  ██████╗██████╗ ███████╗ █████╗ ██████╗ ██╗   ██╗
@@ -25,33 +25,59 @@
 ##  You should have received a copy of the GNU Lesser General Public License
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##------------------------------------------------------------------------------
+##  Bash Include files
+HOMEBREW_PREFIX=$(brew --prefix)
+source $HOMEBREW_PREFIX/lib/cpcLib.sh
 
-from cpcready import variables as var
-from cpcready import common as function
+## Function to display help message
+function show_help {
+    CPCREADY
+    echo "Change Emulator."
+    echo 
+    echo "Use: $(basename "$0") [option]"
+    echo "  -h, --help     Show this help message."
+    echo "  -v, --version  Show version this software."
+    echo "Option:"
+    echo "  [parameter] Supported Emulators. Options values ["m4","rvm"]."
+    echo "              If the parameter is empty, shows the"
+    echo "              current value."
+}
 
-def is_in_screen_mode(value):
-    """Comprueba si un valor está en la lista SCREEN_MODE.
+## Check if the help parameter is provided
+case $1 in
+    -v|--version)
+        show_version
+        exit 0
+        ;;
+    -h|--help)
+        show_help
+        exit 0
+        ;;
+esac
 
-    Args:
-        value (str): Valor a comprobar.
+## Chequeamos si existe el archivo de variables.
+## si no existe salimos con error
+check_env_file
 
-    Returns:
-        bool: True si el valor está en la lista, False en caso contrario.
-    """
-    return value in var.SCREEN_MODE
+## Cargamos archivo de variables
+source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
 
-def change_screen_mode(mode):
-    """Cambia el modo de imagen del proyecto.
 
-    Args:
-        mode (str): modo de imagen
-    """
-    if mode == None:
-        function.message_normal("\nCurrent screen mode is: " + function.get_value_cpcready("mode"))
-        exit(0)
-    else:
-        if is_in_screen_mode(mode) == False:
-            function.message_error("\nSyntax Error\nInvalid screen mode.")
-            exit(1)
-        function.update_value_cpcready("mode", mode)
-        function.message_ok("\nChanged Screen mode: " + mode)
+## Check if the parameter is empty
+if [ -z "$1" ]; then
+    evaluaEmulator $EMULATOR
+    echo
+    PRINT "OK" "Emulator Selected is $EMULATOR"
+    exit 0
+fi
+
+# Comprobamos Emuladores soportados
+evaluaEmulator $1
+cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" EMULATOR $1
+echo
+PRINT "OK" "Changed Emulator $1"
+
+
+
+
+

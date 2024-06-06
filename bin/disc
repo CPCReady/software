@@ -1,4 +1,4 @@
-
+#!/bin/bash
 ##------------------------------------------------------------------------------
 ##
 ##        ██████╗██████╗  ██████╗██████╗ ███████╗ █████╗ ██████╗ ██╗   ██╗
@@ -26,5 +26,52 @@
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##------------------------------------------------------------------------------
 
-from cpcready import variables as var
-from cpcready import common as function
+## Bash Include files
+HOMEBREW_PREFIX=$(brew --prefix)
+source $HOMEBREW_PREFIX/lib/cpcLib.sh
+
+# Function to display help message
+function show_help {
+    CPCREADY
+    echo "Create disk image."
+    echo 
+    echo "Use: $(basename "$0") [option]"
+    echo "  -h, --help     Show this help message."
+    echo "  -v, --version  Show version this software."
+    echo "Option:"
+    echo "  [parameter]  Name of disc image to create."
+    echo "               If the parameter is empty, shows the"
+    echo "               current value."
+}
+
+# Check if the help parameter is provided
+case $1 in
+    -v|--version)
+        show_version
+        exit 0
+        ;;
+    -h|--help)
+        show_help
+        exit 0
+        ;;
+esac
+
+## Chequeamos si existe el archivo de variables.
+## si no existe salimos con error
+check_env_file
+
+## Cargamos archivo de variables
+source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
+
+# Check if exactly one parameter is provided
+if [ "$#" -ne 1 ]; then
+    echo -e "\nDrive A: $DISC"
+    exit 0
+fi
+
+echo
+create_dsk "$OUT_DISC/$1"
+cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" DISC $1
+
+
+
