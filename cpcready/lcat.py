@@ -41,7 +41,7 @@ def cat_image_disc(name):
         name (str): nombre de la imagen de disco.
     """
     ## Comando para crear la imagen de disco
-    COMMAND = var.IDSK_TOOL + f" {name} -l | sed 's/:/ /g' | sed 's/Ko//g'"
+    COMMAND = var.IDSK_TOOL + f" {name} -l | sed -e 's/://g' -e 's/ Ko/K/g'"
     proceso = subprocess.run(COMMAND, shell=True)
 
     # Verificar la salida y posibles errores
@@ -70,7 +70,8 @@ def count_total_kilobytes_in_folder(folder_path):
 def show_files_in_image_disc():
     ## Muestra el contenido e una imagen de disco
     image = function.get_value_cpcready("disc")
-    print_formatted_text(HTML(f"\nDrive A: {function.get_value_cpcready("disc")}"))
+    DISC = function.get_value_cpcready("disc")
+    print_formatted_text(HTML(f"\nDrive A: {DISC}"))
     DISC_IMAGE = var.PWD + var.OUT_FOLDER + image
     cat_image_disc(DISC_IMAGE)
     total_bytes_free = 178 - count_total_kilobytes_in_folder(var.FILES_FOLDER)

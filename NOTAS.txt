@@ -1,0 +1,38 @@
+yq e -i '.modedf = "22223"' pp.yaml     
+brew install jinja2-cli 
+yq e '.mode' pp.yaml 
+jinja2 --format=json template.j2 SYSTEM="$SYSTEM" > config.json
+jinja2 --format=json template.j2 SYSTEM="$SYSTEM" USER="$USER" MODE="$MODE" > config.json
+
+
+#!/bin/bash
+
+# Obtener fecha y hora actuales
+fecha_y_hora=$(date +"%Y-%m-%d %H:%M:%S")
+
+echo "Fecha y hora actuales: $fecha_y_hora"ç
+
+ç
+
+#!/bin/bash
+
+# Obtener solo la fecha
+fecha=$(date +"%Y-%m-%d")
+
+# Obtener solo la hora
+hora=$(date +"%H:%M:%S")
+
+echo "Fecha actual: $fecha"
+echo "Hora actual: $hora"
+
+
+
+#!/bin/bash
+
+# Obtener la ruta del directorio donde está instalado el primer script (primer_script.sh)
+DIR="$(brew --prefix)/bin"
+
+# Source al segundo script
+source "$DIR/segundo_script.sh"
+
+# Resto del código del primer script...
