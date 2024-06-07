@@ -29,7 +29,6 @@
 
 ## VARIABLES SDK CPCREADY
 
-PATH_VERSION_FILE="$HOMEBREW_PREFIX/share/VERSION"
 
 # if [[ "$OSTYPE" == "linux-gnu" ]]; then
 #    TEMPLATE_CPCEMU="$HOMEBREW_PREFIX/share/cpcemu/cpcemu0.cfg"
@@ -53,7 +52,7 @@ NORMAL=$'\033[0;39;49m'
 BOLD="$(tput bold)"
 
 ## VARIABLES PROYECTOS
-
+PATH_VERSION_FILE="$HOMEBREW_PREFIX/share/VERSION"
 HOMEBREW_PREFIX_SHARE="$HOMEBREW_PREFIX/share"
 SRC_FOLDER="src"
 OUT_FILES="out/files"
@@ -72,11 +71,44 @@ CONFIG_CPCREADY="CPCReady.yml"
 # CONFIG_CPCREADY="CPCReady.cfg"
 # CONFIG_CPCEMU="CPCEmu.cfg"
 
+
+##
+## obtiene la version
+##
+##   Returns:
+##       string(): version
+##
+
+function get_version(){
+  version=$(cat $PATH_VERSION_FILE)
+  echo $version
+}
+
+##
+## Muestra el logo con la version
+##
+##   Returns:
+##       string(): version
+##
+
+function cpcready_logo {
+   echo
+   VERSION=$(get_version)
+   echo "${WHITE}╔═╗╔═╗╔═╗  ┌──────────┐"
+   echo "${WHITE}║  ╠═╝║    │ ${NORMAL}${RED}██ ${GREEN}██ ${BLUE}██${NORMAL} │   ${WHITE}${BOLD}Version: ${GREEN}$VERSION${NORMAL}"
+   echo "${WHITE}╚═╝╩  ╚═╝  └──────────┘"
+
+   echo "Ready" >&2
+   echo "█" >&2
+   echo "${NORMAL}"
+}
+
 ##
 ## Reemplaza espacios por _ 
 ##
 ##   Args:
 ##       file (str): nombre de fichero
+##
 
 replace_spaces() {
     local input_string="$1"
@@ -89,6 +121,7 @@ replace_spaces() {
 ##
 ##   Args:
 ##       file (str): nombre de fichero
+##
 
 function is_cpcready_project {
    if [ ! -f "$CONFIG_CPCREADY" ]; then
@@ -105,6 +138,7 @@ function is_cpcready_project {
 ##
 ##   Returns:
 ##       bool: True si existe, False si no existe
+##
 
 check_path_existence() {
     local path="$1"
@@ -118,9 +152,17 @@ check_path_existence() {
     fi
 }
 
+##
+## Obtine la fecha y la hora actuales
+##
+##   Returns:
+##       string(): fecha y hora actuales
+##
 
-
-
+function get_current_datetime(){
+  fecha_y_hora=$(date +"%Y-%m-%d %H:%M:%S")
+  echo "$fecha_y_hora"
+}
 
 
 

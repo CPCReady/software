@@ -35,16 +35,18 @@ function show_help {
     echo
     echo "Create a CPCReady project."
     echo 
-    echo "Use: new [option] Project Name"
+    echo "Use: new [option] Project"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
+    echo "Option:"
+    echo "  [parameter] Project Name"
     ready
 }
 
 # Check if the help parameter is provided
 case $1 in
     -v|--version)
-        show_version
+        cpcready_logo
         exit 0
         ;;
     -h|--help)
@@ -61,7 +63,8 @@ if [ -z "$1" ]; then
 fi
 
 ## Eliminar espacios en blanco
-PROJECT=$(replace_spaces "$1")
+PROJECT_PATH=$(replace_spaces "$1")
+PROJECT_NAME=$(basename "$PROJECT_PATH")
 
 ## Verificar si el proyecto ya existe
 result=$(check_path_existence "$PROJECT")
@@ -70,20 +73,22 @@ if [ "$result" == "true" ]; then
     exit 1
 fi
 
-mkdir -p "$PROJECT"
-mkdir -p "$PROJECT/$SRC_FOLDER"
-mkdir -p "$PROJECT/$OUT_FILES"
-mkdir -p "$PROJECT/$OUT_DISC"
-mkdir -p "$PROJECT/$TMP_FOLDER"
-mkdir -p "$PROJECT/$VSCODE_FOLDER"
+mkdir -p "$PROJECT_PATH"
+mkdir -p "$PROJECT_PATH/$SRC_FOLDER"
+mkdir -p "$PROJECT_PATH/$OUT_FILES"
+mkdir -p "$PROJECT_PATH/$OUT_DISC"
+mkdir -p "$PROJECT_PATH/$TMP_FOLDER"
+mkdir -p "$PROJECT_PATH/$VSCODE_FOLDER"
 
-touch "$PROJECT/$CONFIG_CPCEMU"
-echo "" >"$PROJECT/$CONFIG_CPCREADY"
-yq e -i ".project = \"$PROJECT\"" "$PROJECT/$CONFIG_CPCREADY"
-yq e -i ".disc = \"$PROJECT.dsk\"" "$PROJECT/$CONFIG_CPCREADY"
-yq e -i ".model =6128" "$PROJECT/$CONFIG_CPCREADY"
-yq e -i ".mode =1" "$PROJECT/$CONFIG_CPCREADY"
-jinja2 --format=json $HOMEBREW_PREFIX_SHARE/DISC.j2 -D project="$PROJECT" > "$PROJECT/$SRC_FOLDER/DISC.BAS"
+echo "" >"$PROJECT_PATH/$CONFIG_CPCREADY"
+yq e -i ".project = \"$PROJECT_NAME\"" "$PROJECT_PATH/$CONFIG_CPCREADY"
+yq e -i ".disc = \"$PROJECT_NAME.dsk\"" "$PROJECT_PATH/$CONFIG_CPCREADY"
+yq e -i ".model =6128" "$PROJECT_PATH/$CONFIG_CPCREADY"
+yq e -i ".mode =1" "$PROJECT_PATH/$CONFIG_CPCREADY"
+
+current_datetime=$(get_current_datetime)
+current_version=$(get_version)
+jinja2 --format=json $HOMEBREW_PREFIX_SHARE/DISC.j2 -D project="$PROJECT_NAME" -D current_datetime="$current_datetime" -D version="$current_version"> "$PROJECT_PATH/$SRC_FOLDER/DISC.BAS"
 
 
 exit

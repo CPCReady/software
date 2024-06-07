@@ -1,3 +1,12 @@
+dependencias:
+-jinja-cli
+-dos2unix
+-yq
+-jq
+
+
+
+
 yq e -i '.modedf = "22223"' pp.yaml     
 brew install jinja2-cli 
 yq e '.mode' pp.yaml 
