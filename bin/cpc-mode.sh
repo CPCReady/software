@@ -30,21 +30,21 @@
 HOMEBREW_PREFIX=$(brew --prefix)
 source $HOMEBREW_PREFIX/bin/cpc.lib
 
-## Function to display help message
+# Function to display help message
 function show_help {
     CPCREADY
-    echo "Change Emulator."
+    echo "Change screen mode."
     echo 
-    echo "Use: $(basename "$0") [option]"
+    echo "Use: mode [option]"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
     echo "Option:"
-    echo "  [parameter] Supported Emulators. Options values ["m4","rvm"]."
-    echo "              If the parameter is empty, shows the"
-    echo "              current value."
+    echo "  [parameter]  Screen Mode. Options values [0,1,2]."
+    echo "               If the parameter is empty, shows the"
+    echo "               current value."
 }
 
-## Check if the help parameter is provided
+# Check if the help parameter is provided
 case $1 in
     -v|--version)
         show_version
@@ -63,22 +63,17 @@ check_env_file
 ## Cargamos archivo de variables
 source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
 
-
-## Check if the parameter is empty
+## Chequeamos si el parámetro es vacío
 if [ -z "$1" ]; then
-    evaluaEmulator $EMULATOR
     echo
-    PRINT "OK" "Emulator Selected is $EMULATOR"
+    evaluaMode "$MODE"
+    PRINT "OK" "Screen Mode is $MODE"
     exit 0
 fi
 
-# Comprobamos Emuladores soportados
-evaluaEmulator $1
-cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" EMULATOR $1
-echo
-PRINT "OK" "Changed Emulator $1"
+# Comprobamos que el modo de pantalla sea correcto
+evaluaMode "$1"
 
-
-
-
-
+cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" MODE $1
+clear
+PRINT "OK" "Changed Screen Mode $1"

@@ -33,15 +33,11 @@ source $HOMEBREW_PREFIX/bin/cpc.lib
 ## Function to display help message
 function show_help {
     CPCREADY
-    echo "Change CPC Model."
+    echo "List files."
     echo 
-    echo "Use: $(basename "$0") [option]"
+    echo "Use: cat [option]"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
-    echo "Option:"
-    echo "  [parameter] Amstrad CPC Models. Options values [464,664,6128]."
-    echo "              If the parameter is empty, shows the"
-    echo "              current value."
 }
 
 ## Check if the help parameter is provided
@@ -63,40 +59,25 @@ check_env_file
 ## Cargamos archivo de variables
 source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
 
-
-## Check if the parameter is empty
-if [ -z "$1" ]; then
-    evaluaCPCModel $MODEL
-    clear
-    model_cpc $MODEL
+## list files dsk
+if [[ "$EMULATOR" == "rvm" ]]; then
+    ## chequeamos nomenclatura
+    check_83_files_path $OUT_DISC
+    total_KB=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g' | awk '{sum += $3} END {print sum}')
+    free_KB=$((178 - total))
+    echo -e "Drive A: $DISC"
+    exit_result=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g')
+    if [[ ! "$exit_result" =~ "Fichier image non supporter" ]]; then
+        echo "$exit_result"
+    fi
+    echo -e "\n${free_KB}K free"
     exit 0
 fi
 
-# Comprobamos Modelo CPC
-evaluaCPCModel $1
-
-case $1 in
-    "464")
-        MODEL=0
-        ;;
-    "664")
-        MODEL=1
-        ;;
-    "6128")
-        MODEL=2
-        ;;
-    *)
-        PRINT ERROR "CPC model $1 is not supported."
-        ;;
-esac
-
-cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCEMU" CPC_TYPE $MODEL
-cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" MODEL $1
-
-clear
-model_cpc $1
-
-
-
-
-
+## list files M4Board
+if [[ "$EMULATOR" == "m4" ]]; then
+    ## chequeamos nomenclatura
+    check_83_files_path $OUT
+    cat2cpc "$OUT"
+    exit 0
+fi

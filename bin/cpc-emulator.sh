@@ -33,11 +33,15 @@ source $HOMEBREW_PREFIX/bin/cpc.lib
 ## Function to display help message
 function show_help {
     CPCREADY
-    echo "List files."
+    echo "Change Emulator."
     echo 
-    echo "Use: $(basename "$0") [option]"
+    echo "Use: emulator [option]"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
+    echo "Option:"
+    echo "  [parameter] Supported Emulators. Options values ["m4","rvm"]."
+    echo "              If the parameter is empty, shows the"
+    echo "              current value."
 }
 
 ## Check if the help parameter is provided
@@ -59,25 +63,22 @@ check_env_file
 ## Cargamos archivo de variables
 source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
 
-## list files dsk
-if [[ "$EMULATOR" == "rvm" ]]; then
-    ## chequeamos nomenclatura
-    check_83_files_path $OUT_DISC
-    total_KB=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g' | awk '{sum += $3} END {print sum}')
-    free_KB=$((178 - total))
-    echo -e "Drive A: $DISC"
-    exit_result=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g')
-    if [[ ! "$exit_result" =~ "Fichier image non supporter" ]]; then
-        echo "$exit_result"
-    fi
-    echo -e "\n${free_KB}K free"
+
+## Check if the parameter is empty
+if [ -z "$1" ]; then
+    evaluaEmulator $EMULATOR
+    echo
+    PRINT "OK" "Emulator Selected is $EMULATOR"
     exit 0
 fi
 
-## list files M4Board
-if [[ "$EMULATOR" == "m4" ]]; then
-    ## chequeamos nomenclatura
-    check_83_files_path $OUT
-    cat2cpc "$OUT"
-    exit 0
-fi
+# Comprobamos Emuladores soportados
+evaluaEmulator $1
+cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" EMULATOR $1
+echo
+PRINT "OK" "Changed Emulator $1"
+
+
+
+
+

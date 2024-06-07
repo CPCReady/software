@@ -30,21 +30,33 @@
 HOMEBREW_PREFIX=$(brew --prefix)
 source $HOMEBREW_PREFIX/bin/cpc.lib
 
+# Allowed values for the emulator parameter
+emulators=("m4" "rvm")
+
 # Function to display help message
 function show_help {
+
     CPCREADY
-    echo "Create disk image."
+    echo "Run Files in Emulator"
     echo 
-    echo "Use: $(basename "$0") [option]"
+    echo "Use: run [option]"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
     echo "Option:"
-    echo "  [parameter]  Name of disc image to create."
-    echo "               If the parameter is empty, shows the"
-    echo "               current value."
+    echo "  [parameter]  File Name. If there is no parameter, "
+    echo "               it uses DISC.BAS by default."
 }
 
+## Chequeamos si existe el archivo de variables.
+## si no existe salimos con error
+check_env_file
+
+## Cargamos archivo de variables
+source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
+
 # Check if the help parameter is provided
+# Process command line options
+## Check if the help parameter is provided
 case $1 in
     -v|--version)
         show_version
@@ -56,22 +68,38 @@ case $1 in
         ;;
 esac
 
-## Chequeamos si existe el archivo de variables.
-## si no existe salimos con error
-check_env_file
-
-## Cargamos archivo de variables
-source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
-
-# Check if exactly one parameter is provided
-if [ "$#" -ne 1 ]; then
-    echo -e "\nDrive A: $DISC"
-    exit 0
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    CPCEMU="$HOMEBREW_PREFIX/share/cpcemu/cpcemu"
+    RVM="$HOMEBREW_PREFIX/share/RetroVirtualMachine"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    CPCEMU="$HOMEBREW_PREFIX/share/CPCemuMacOS.app/Contents/MacOS/CPCemuMacOS"
+    RVM="$HOMEBREW_PREFIX/share/RetroVirtualMachine2.app/Contents/MacOS/RetroVirtualMachine2"
+else
+    PRINT ERROR "$OSTYPE Operating system NOT supported."
 fi
 
+EMULATOR=$(echo "$EMULATOR" | tr '[:upper:]' '[:lower:]')
+
 echo
-create_dsk "$OUT_DISC/$1"
-cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" DISC $1
+if [[ "$EMULATOR" == "m4" ]]; then
+    check_83_files_path "$OUT"
+    PRINT "OK" "Emulator: CPCEmu."
+    PRINT "OK" "Project execute in SD."
+    $CPCEMU -f -c "$PWD/$PATH_CONFIG_PROJECT/$CONFIG_CPCEMU" > /dev/null 2>&1 &
+elif [[ "$EMULATOR" == "rvm" ]]; then
+    if [ ! -e "$OUT_DISC/$DISC" ]; then
+        PRINT "ERROR" "$OUT_DISC/$DISC not found."
+    fi
+    # Si no pasamos argumento ejecutamos DISC.BAS
 
+    if [ -z "$1" ]; then
+        BAS_FILE="DISC.BAS"
+    else
+        BAS_FILE="$1"
+    fi
 
-
+    PRINT "OK" "Emulator: RetroVirtualMachine."
+    PRINT "OK" "DISC: $DISC"
+    PRINT "OK" "run\"$BAS_FILE\""
+    $RVM -b=cpc$MODEL -i "$OUT_DISC/$DISC" -c='run"'$BAS_FILE'\n' > /dev/null 2>&1 &
+fi    

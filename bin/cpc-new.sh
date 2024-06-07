@@ -35,7 +35,7 @@ function show_help {
 
     echo "Create a CPCReady project."
     echo 
-    echo "Use: $(basename "$0") [option] Project Name"
+    echo "Use: new [option] Project Name"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
     ready

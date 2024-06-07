@@ -30,21 +30,24 @@
 HOMEBREW_PREFIX=$(brew --prefix)
 source $HOMEBREW_PREFIX/bin/cpc.lib
 
-## Function to display help message
+# Function to display help message
 function show_help {
-
     CPCREADY
-    echo "Show information about this software."
+    echo "Create disk image."
     echo 
-    echo "Use: $(basename "$0")"
-    ready
+    echo "Use: disc [option]"
+    echo "  -h, --help     Show this help message."
+    echo "  -v, --version  Show version this software."
+    echo "Option:"
+    echo "  [parameter]  Name of disc image to create."
+    echo "               If the parameter is empty, shows the"
+    echo "               current value."
 }
 
-## Check if the help parameter is provided
+# Check if the help parameter is provided
 case $1 in
     -v|--version)
         show_version
-        ready
         exit 0
         ;;
     -h|--help)
@@ -60,9 +63,15 @@ check_env_file
 ## Cargamos archivo de variables
 source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
 
-show_version
-#CPCReady: A tool to prepare your CPC project from Visual Studio Code
-echo "${WHITE}${BOLD}© Destroyer 2024 - destroyer.dcf@gmail.com${NORMAL}"
-echo "${WHITE}${BOLD}https://github.com/destroyer-dcf/CPCReady${NORMAL}"
+# Check if exactly one parameter is provided
+if [ "$#" -ne 1 ]; then
+    echo -e "\nDrive A: $DISC"
+    exit 0
+fi
 
-ready
+echo
+create_dsk "$OUT_DISC/$1"
+cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" DISC $1
+
+
+

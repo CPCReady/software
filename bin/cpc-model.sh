@@ -30,21 +30,21 @@
 HOMEBREW_PREFIX=$(brew --prefix)
 source $HOMEBREW_PREFIX/bin/cpc.lib
 
-# Function to display help message
+## Function to display help message
 function show_help {
     CPCREADY
-    echo "Change screen mode."
+    echo "Change CPC Model."
     echo 
-    echo "Use: $(basename "$0") [option]"
+    echo "Use: model [option]"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
     echo "Option:"
-    echo "  [parameter]  Screen Mode. Options values [0,1,2]."
-    echo "               If the parameter is empty, shows the"
-    echo "               current value."
+    echo "  [parameter] Amstrad CPC Models. Options values [464,664,6128]."
+    echo "              If the parameter is empty, shows the"
+    echo "              current value."
 }
 
-# Check if the help parameter is provided
+## Check if the help parameter is provided
 case $1 in
     -v|--version)
         show_version
@@ -63,17 +63,40 @@ check_env_file
 ## Cargamos archivo de variables
 source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
 
-## Chequeamos si el parámetro es vacío
+
+## Check if the parameter is empty
 if [ -z "$1" ]; then
-    echo
-    evaluaMode "$MODE"
-    PRINT "OK" "Screen Mode is $MODE"
+    evaluaCPCModel $MODEL
+    clear
+    model_cpc $MODEL
     exit 0
 fi
 
-# Comprobamos que el modo de pantalla sea correcto
-evaluaMode "$1"
+# Comprobamos Modelo CPC
+evaluaCPCModel $1
 
-cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" MODE $1
+case $1 in
+    "464")
+        MODEL=0
+        ;;
+    "664")
+        MODEL=1
+        ;;
+    "6128")
+        MODEL=2
+        ;;
+    *)
+        PRINT ERROR "CPC model $1 is not supported."
+        ;;
+esac
+
+cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCEMU" CPC_TYPE $MODEL
+cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" MODEL $1
+
 clear
-PRINT "OK" "Changed Screen Mode $1"
+model_cpc $1
+
+
+
+
+

@@ -36,7 +36,7 @@ function show_help {
     CPCREADY
     echo "Clear console."
     echo 
-    echo "Use: $(basename "$0")"
+    echo "Use: cls"
 }
 
 ## Check if the help parameter is provided
