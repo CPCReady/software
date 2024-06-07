@@ -75,10 +75,16 @@ mkdir -p "$PROJECT/$SRC_FOLDER"
 mkdir -p "$PROJECT/$OUT_FILES"
 mkdir -p "$PROJECT/$OUT_DISC"
 mkdir -p "$PROJECT/$TMP_FOLDER"
+mkdir -p "$PROJECT/$VSCODE_FOLDER"
 
-touch "$PWD/$PROJECT/$CONFIG_CPCEMU"
-echo "$PWD/$PROJECT/$CONFIG_CPCREADY"
-# yq e -i '.project = "$PROJECT"' "$PROJECT/$CONFIG_CPCREADY"
+touch "$PROJECT/$CONFIG_CPCEMU"
+echo "" >"$PROJECT/$CONFIG_CPCREADY"
+yq e -i ".project = \"$PROJECT\"" "$PROJECT/$CONFIG_CPCREADY"
+yq e -i ".disc = \"$PROJECT.dsk\"" "$PROJECT/$CONFIG_CPCREADY"
+yq e -i ".model =6128" "$PROJECT/$CONFIG_CPCREADY"
+yq e -i ".mode =1" "$PROJECT/$CONFIG_CPCREADY"
+jinja2 --format=json $HOMEBREW_PREFIX_SHARE/DISC.j2 -D project="$PROJECT" > "$PROJECT/$SRC_FOLDER/DISC.BAS"
+
 
 exit
 while true; do

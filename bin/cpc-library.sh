@@ -60,6 +60,7 @@ OUT_FILES="out/files"
 OUT_DISC="out"
 OUT_TAPE="out"
 TMP_FOLDER="tmp"
+VSCODE_FOLDER=".vscode"
 CONFIG_CPCREADY="CPCReady.yml"
 
 
