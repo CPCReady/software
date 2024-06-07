@@ -28,14 +28,14 @@
 
 ## define variables y carga funciones
 HOMEBREW_PREFIX=$(brew --prefix)
-# source $HOMEBREW_PREFIX/bin/cpc.lib
+source $HOMEBREW_PREFIX/bin/cpc-library.sh
 
-echo $HOMEBREW_PREFIX
-echo -e "${WHITE}${BOLD}CPCReady - The command line interface (CLI) for programming Amstrad CPC in Visual Studio Code${NORMAL}"  
-echo -e "${WHITE}${BOLD}©Destroyer 2024 - destroyer.dcf@gmail.com${NORMAL}"
 echo
-echo -e "${WHITE}${BOLD}Version: 1.0.0${NORMAL}"
-echo -e "${WHITE}${BOLD}CPCReady-Core Version: 1.0.0${NORMAL}"
-echo -e "${GREEN}${BOLD}See ${BLUE}https://github.com/CPCReady/software${GREEN} for more information.${NORMAL}"
+echo -e "${WHITE}${BOLD}CPCReady - The command line interface (CLI) for programming Amstrad CPC in Visual Studio Code${NORMAL}"  
+echo -e "${WHITE}© Destroyer 2024 - destroyer.dcf@gmail.com${NORMAL}"
+echo
+echo -e "${WHITE}Version: 1.0.0${NORMAL}"
+echo -e "${WHITE}CPCReady-Core Version: 1.0.0${NORMAL}"
+echo -e "${GREEN}See ${BLUE}https://github.com/CPCReady/software${GREEN} for more information.${NORMAL}"
 echo
 

@@ -27,6 +27,9 @@
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##------------------------------------------------------------------------------
 
+HOMEBREW_PREFIX=$(brew --prefix)
+source $HOMEBREW_PREFIX/bin/cpc-library.sh
+
 VERSION="1.0.0"
 
 # Función de ayuda
@@ -71,7 +74,7 @@ if [[ "$1" == '--' ]]; then shift; fi
 
 # Verificar que se haya proporcionado al menos un argumento
 if [ $# -lt 1 ]; then
-    echo -e "\ncommand required." 1>&2
+    echo -e "\n${RED}command required.${NORMAL}" 1>&2
     show_help
     exit 1
 fi
@@ -80,7 +83,7 @@ fi
 case "$1" in
     about)
         parameter="${2:-}" 
-        ./cpc-about.sh $parameter
+        cpc-about.sh $parameter
         ;;
     amsdos)
         echo "amsdos"
@@ -128,7 +131,7 @@ case "$1" in
         show_help
         ;;
     *)
-        echo -e "\nCommand not supported\n" 1>&2
+        echo -e "\n${RED}Command not supported.${NORMAL}" 1>&2
         show_help
         exit 1
         ;;
