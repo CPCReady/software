@@ -90,11 +90,11 @@ case "$1" in
         ;;
     new)
         if [ -z "$2" ]; then
-            echo "Error: Se requiere un nombre después de 'new'." 1>&2
+            echo -e "\n${RED}${BOLD}Param Project name required.${NORMAL}" 1>&2
             exit 1
         fi
         project="$2"
-        echo "¡Hola, $project!"
+        cpc-new.sh "$project"
         ;;
     save)
         file="${2:-}" 
@@ -131,7 +131,7 @@ case "$1" in
         show_help
         ;;
     *)
-        echo -e "\n${RED}Command not supported.${NORMAL}" 1>&2
+        echo -e "\n${RED}${BOLD}Command not supported.${NORMAL}" 1>&2
         show_help
         exit 1
         ;;

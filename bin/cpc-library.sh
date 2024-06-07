@@ -54,13 +54,22 @@ BOLD="$(tput bold)"
 
 ## VARIABLES PROYECTOS
 
-IN_BAS="src"
-OUT="out/files"
+HOMEBREW_PREFIX_SHARE="$HOMEBREW_PREFIX/share"
+SRC_FOLDER="src"
+OUT_FILES="out/files"
 OUT_DISC="out"
 OUT_TAPE="out"
-PATH_CONFIG_PROJECT="cfg"
-CONFIG_CPCREADY="CPCReady.cfg"
-CONFIG_CPCEMU="CPCEmu.cfg"
+TMP_FOLDER="tmp"
+CONFIG_CPCREADY="CPCReady.yml"
+
+
+# IN_BAS="src"
+# OUT="out/files"
+# OUT_DISC="out"
+# OUT_TAPE="out"
+# PATH_CONFIG_PROJECT="cfg"
+# CONFIG_CPCREADY="CPCReady.cfg"
+# CONFIG_CPCEMU="CPCEmu.cfg"
 
 ##
 ## Reemplaza espacios por _ 
@@ -85,6 +94,27 @@ function is_cpcready_project {
       echo -e "${RED}\nThis software can only be used in a CPCReady project.${NORMAL}"
       exit 1
    fi
+}
+
+##
+## Verifica si existe una carpeta o fichero
+##
+##   Args:
+##       folder_path (str): path o ruta de la carpeta o fichero
+##
+##   Returns:
+##       bool: True si existe, False si no existe
+
+check_path_existence() {
+    local path="$1"
+
+    if [ -e "$path" ]; then
+        echo "true"
+        return 0
+    else
+        echo "false"
+        return 1
+    fi
 }
 
 

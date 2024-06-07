@@ -32,7 +32,7 @@ source $HOMEBREW_PREFIX/bin/cpc-library.sh
 
 # Function to display help message
 function show_help {
-
+    echo
     echo "Create a CPCReady project."
     echo 
     echo "Use: new [option] Project Name"
@@ -55,17 +55,32 @@ esac
 
 # Verifica si se ha pasado el nombre de proyecto
 if [ -z "$1" ]; then
-    echo -e "\nNot enough arguments (missing: "Project Name")"
+    echo -e "\n${RED}${BOLD}Param Project name required.${NORMAL}" 1>&2
     show_help
     exit 1
 fi
 
+## Eliminar espacios en blanco
+PROJECT=$(replace_spaces "$1")
 
-if [ -e ./"$CONFIG_CPCREADY" ]; then
-    echo -e "\nProject {project} already exists."
-    exit
+## Verificar si el proyecto ya existe
+result=$(check_path_existence "$PROJECT")
+if [ "$result" == "true" ]; then
+    echo -e "\n${RED}${BOLD}Project $PROJECT already exists."
+    exit 1
 fi
 
+mkdir -p "$PROJECT"
+mkdir -p "$PROJECT/$SRC_FOLDER"
+mkdir -p "$PROJECT/$OUT_FILES"
+mkdir -p "$PROJECT/$OUT_DISC"
+mkdir -p "$PROJECT/$TMP_FOLDER"
+
+touch "$PWD/$PROJECT/$CONFIG_CPCEMU"
+echo "$PWD/$PROJECT/$CONFIG_CPCREADY"
+# yq e -i '.project = "$PROJECT"' "$PROJECT/$CONFIG_CPCREADY"
+
+exit
 while true; do
     echo
     read -p "${BLUE}${BOLD} Project's name: ${NORMAL}" project_name
