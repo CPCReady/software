@@ -9,7 +9,8 @@
 ##        ╚═════╝╚═╝      ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   
 ##
 ##-----------------------------LICENSE NOTICE------------------------------------
-##  This file is part of CPCReady Basic programation.
+##  This file is part of CPCReady - The command line interface (CLI) for 
+##  programming Amstrad CPC in Visual Studio Code..
 ##  Copyright (C) 2024 Destroyer
 ##
 ##  This program is free software: you can redistribute it and/or modify
@@ -17,6 +18,7 @@
 ##  the Free Software Foundation, either version 3 of the License, or
 ##  (at your option) any later version.
 ##
+##  This program is distributed in the hope that it will be useful,
 ##  This program is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -35,11 +37,11 @@ function show_help {
     echo
     echo "Create a CPCReady project."
     echo 
-    echo "Use: new [option] Project"
+    echo "Use: new [option]"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
     echo "Option:"
-    echo "  [parameter] Project Name"
+    echo "  [parameter] Project Name (required)"
     ready
 }
 
@@ -112,5 +114,16 @@ fi
 create_disc_image $PROJECT_PATH/$OUT_DISC/$PROJECT_NAME.dsk
 
 ## Mostramos mensaje
-PATH_PROJECT=$(dirname "$PROJECT_PATH")
+PATH_PROJECT=$(dirname "$PWD/$PROJECT_PATH")
 echo -e "${WHITE}${BOLD}\nCreated project${GREEN} $PROJECT_NAME ${WHITE}${BOLD}in${GREEN}${BOLD} $PATH_PROJECT"
+
+## Comprobamos si esta configurado el emulador
+result=$(check_path_existence "$HOME/.CPCReady/emulators.yaml")
+if [ "$result" == "false" ]; then
+    mkdir -p "$HOME/.CPCReady"
+    echo "" > "$HOME/.CPCReady/emulators.yaml"
+    yq e -i ".RetroVirtualMachine_Path = \"\"" "$HOME/.CPCReady/emulators.yaml"
+    echo -e "\n${YELLOW}${BOLD}CPCReady does not have the RetroVirtualMachine Emulator path configured."
+    echo -e "Please set the path to $HOME/.CPCReady/emulators.yaml"
+    exit 0
+fi

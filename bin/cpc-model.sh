@@ -9,7 +9,8 @@
 ##        ╚═════╝╚═╝      ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   
 ##
 ##-----------------------------LICENSE NOTICE------------------------------------
-##  This file is part of CPCReady Basic programation.
+##  This file is part of CPCReady - The command line interface (CLI) for 
+##  programming Amstrad CPC in Visual Studio Code..
 ##  Copyright (C) 2024 Destroyer
 ##
 ##  This program is free software: you can redistribute it and/or modify
@@ -17,6 +18,7 @@
 ##  the Free Software Foundation, either version 3 of the License, or
 ##  (at your option) any later version.
 ##
+##  This program is distributed in the hope that it will be useful,
 ##  This program is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -30,24 +32,25 @@
 HOMEBREW_PREFIX=$(brew --prefix)
 source $HOMEBREW_PREFIX/bin/cpc-library.sh
 
-## Function to display help message
+# Function to display help message
 function show_help {
-    CPCREADY
-    echo "Change CPC Model."
+    echo
+    echo "Change CPC Model or show the current one."
     echo 
     echo "Use: model [option]"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
     echo "Option:"
-    echo "  [parameter] Amstrad CPC Models. Options values [464,664,6128]."
-    echo "              If the parameter is empty, shows the"
-    echo "              current value."
+    echo "  [parameter] CPC Model [464,664,6128] (optional)"
+    echo "              If no parameter is passed, it shows "
+    echo "              the current CPC Model."
+    ready
 }
 
-## Check if the help parameter is provided
+# Check if the help parameter is provided
 case $1 in
     -v|--version)
-        show_version
+        cpcready_logo
         exit 0
         ;;
     -h|--help)
@@ -56,47 +59,31 @@ case $1 in
         ;;
 esac
 
-## Chequeamos si existe el archivo de variables.
-## si no existe salimos con error
-check_env_file
+## Chequeamos si es un proyecto CPCReady
+is_cpcready_project
 
-## Cargamos archivo de variables
-source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
+## Leemos las configuraciones del proyecto
+read_project_config
 
-
-## Check if the parameter is empty
+# Chequeamos si se ha pasado parametro para crear o mostra nombre imagen
 if [ -z "$1" ]; then
-    evaluaCPCModel $MODEL
-    clear
-    model_cpc $MODEL
+    ## Chequeamos el modelo de cpc de las configuraciones
+    check_cpc_model "$MODEL"
+    show_model_cpc $MODEL
+    echo -e "\nReady\n█"
     exit 0
 fi
 
-# Comprobamos Modelo CPC
-evaluaCPCModel $1
+## Chequeamos el modelo de cpc de las configuraciones
+check_cpc_model "$1"
 
-case $1 in
-    "464")
-        MODEL=0
-        ;;
-    "664")
-        MODEL=1
-        ;;
-    "6128")
-        MODEL=2
-        ;;
-    *)
-        PRINT ERROR "CPC model $1 is not supported."
-        ;;
-esac
+## Modifica el modo de pantalla en las configuraciones del proyecto.
+yq e -i ".model = $1" "$CONFIG_CPCREADY"
 
-cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCEMU" CPC_TYPE $MODEL
-cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" MODEL $1
-
+## Mostramos mensaje
 clear
-model_cpc $1
-
-
-
+show_model_cpc $1
+echo -e "\nReady\n${GREEN}${BOLD}CPC Model ${WHITE}${BOLD}$1 ${GREEN}${BOLD}configurated successfully${NORMAL}\nReady\n█"
+exit 0
 
 

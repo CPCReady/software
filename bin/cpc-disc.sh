@@ -9,7 +9,8 @@
 ##        ╚═════╝╚═╝      ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   
 ##
 ##-----------------------------LICENSE NOTICE------------------------------------
-##  This file is part of CPCReady Basic programation.
+##  This file is part of CPCReady - The command line interface (CLI) for 
+##  programming Amstrad CPC in Visual Studio Code..
 ##  Copyright (C) 2024 Destroyer
 ##
 ##  This program is free software: you can redistribute it and/or modify
@@ -17,6 +18,7 @@
 ##  the Free Software Foundation, either version 3 of the License, or
 ##  (at your option) any later version.
 ##
+##  This program is distributed in the hope that it will be useful,
 ##  This program is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -32,22 +34,21 @@ source $HOMEBREW_PREFIX/bin/cpc-library.sh
 
 # Function to display help message
 function show_help {
-    CPCREADY
-    echo "Create disk image."
+    echo
+    echo "Create disk image or show the current one."
     echo 
     echo "Use: disc [option]"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
     echo "Option:"
-    echo "  [parameter]  Name of disc image to create."
-    echo "               If the parameter is empty, shows the"
-    echo "               current value."
+    echo "  [parameter] Disk image (optional)"
+    ready
 }
 
 # Check if the help parameter is provided
 case $1 in
     -v|--version)
-        show_version
+        cpcready_logo
         exit 0
         ;;
     -h|--help)
@@ -56,22 +57,31 @@ case $1 in
         ;;
 esac
 
-## Chequeamos si existe el archivo de variables.
-## si no existe salimos con error
-check_env_file
+## Chequeamos si es un proyecto CPCReady
+is_cpcready_project
 
-## Cargamos archivo de variables
-source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
+## Leemos las configuraciones del proyecto
+read_project_config
 
-# Check if exactly one parameter is provided
-if [ "$#" -ne 1 ]; then
+# Chequeamos si se ha pasado parametro para crear o mostra nombre imagen
+if [ -z "$1" ]; then
     echo -e "\nDrive A: $DISC"
     exit 0
 fi
 
-echo
-create_dsk "$OUT_DISC/$1"
-cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" DISC $1
+## Comprobamos si tiene espacios y se los quitamos
+IMAGE_NAME=$(replace_spaces "$1")
 
+# Comprobar si el fichero tiene la extensión .dsk
+if [[ ! "$IMAGE_NAME" =~ \.dsk$ ]] && [[ ! "$IMAGE_NAME" =~ \.DSK$ ]]; then
+    IMAGE_NAME="${IMAGE_NAME}.dsk"
+fi
+create_disc_image $OUT_DISC/$IMAGE_NAME
+
+## Modifica el nombre de la imagen en las configuraciones del proyecto.
+yq e -i ".project = \"$IMAGE_NAME\"" "$CONFIG_CPCREADY"
+
+## Mostramos mensaje
+echo -e "${WHITE}${BOLD}\n$IMAGE_NAME ${GREEN}${BOLD}Image created successfully"
 
 

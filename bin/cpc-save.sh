@@ -9,7 +9,8 @@
 ##        ╚═════╝╚═╝      ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   
 ##
 ##-----------------------------LICENSE NOTICE------------------------------------
-##  This file is part of CPCReady Basic programation.
+##  This file is part of CPCReady - The command line interface (CLI) for 
+##  programming Amstrad CPC in Visual Studio Code..
 ##  Copyright (C) 2024 Destroyer
 ##
 ##  This program is free software: you can redistribute it and/or modify
@@ -17,6 +18,7 @@
 ##  the Free Software Foundation, either version 3 of the License, or
 ##  (at your option) any later version.
 ##
+##  This program is distributed in the hope that it will be useful,
 ##  This program is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -30,26 +32,25 @@
 HOMEBREW_PREFIX=$(brew --prefix)
 source $HOMEBREW_PREFIX/bin/cpc-library.sh
 
-
-## Function to display help message
+# Function to display help message
 function show_help {
-
-    CPCREADY
+    echo
     echo "Create disk image with project files."
     echo 
-    echo "Use: $(basename "$0") [option]"
+    echo "Use: save [option]"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
     echo "Option:"
-    echo "  [parameter] File name. If there is no parameter,"
-    echo "              it creates a dsk image with all the "
-    echo "              contents of the src folder."
+    echo "  [parameter] File name (optional)"
+    echo "              If no parameter is passed, a disk image is "
+    echo "              generated with all the project files."
+    ready
 }
 
-## Check if the help parameter is provided
+# Check if the help parameter is provided
 case $1 in
     -v|--version)
-        show_version
+        cpcready_logo
         exit 0
         ;;
     -h|--help)
@@ -58,69 +59,51 @@ case $1 in
         ;;
 esac
 
-## Chequeamos si existe el archivo de variables.
-## si no existe salimos con error
-check_env_file
+## Chequeamos si es un proyecto CPCReady
+is_cpcready_project
 
-## Cargamos archivo de variables
-source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
+## Leemos las configuraciones del proyecto
+read_project_config
 
-## chequeamos nomenclatura
-check_83_files_path $IN_BAS
+## chequeamos nomenclatura es correcta
+check_83_files_path $SRC_FOLDER
 
-## Crete folder out
-mkdir -p "$OUT"
-mkdir -p "$OUT_DISC"
+## volvemos a crear las carpetas
+mkdir -p "$OUT_FILES"
 
-PATH_DISC="$OUT_DISC/$DISC"
+## Creamos imagen de disco
+create_disc_image $OUT_DISC/$DISC
 
-if [[ "$EMULATOR" == "rvm" ]]; then
-    ## Create image disk
-    PRINT "TAG" "DISC"
-    create_dsk "$PATH_DISC"
-fi
-
-if [[ "$EMULATOR" == "m4" ]]; then
-    ## Create image disk
-    PRINT "TAG" "M4 Board"
-    rm -rf "$OUT"
-    mkdir -p "$OUT"
-    PRINT OK "Delete SD path"
-fi
-
-# si no pasamos parametro asumimos que hay que crear 
-# la imagen DSK de todos los archivos de src
+## Si no pasamos parametro asumimos que hay que crear 
+## la imagen DSK de todos los archivos de src
 if [ -z "$1" ]; then
     ## Add files BAS to disk image
-    for archivo in "$IN_BAS"/*.BAS "$IN_BAS"/*.bas; do
+    for archivo in "$SRC_FOLDER"/*.BAS "$SRC_FOLDER"/*.bas; do
         if [ -f "$archivo" ]; then
             file=$(basename "$archivo")
-            PRINT "TAG" "$file"
-            ## delete comments in bas files
-            rm_comments "$archivo" "$OUT/$file"
+            delete_comments "$archivo" "$OUT_FILES/$file"
             ## convert unix2dos
-            unix2dos "$OUT/$file" >/dev/null 2>&1; PRINT "OK" "Converting file to DOS format." || PRINT "ERROR" "There was a problem converting the file to DOS format."
+            unix2dos "$OUT_FILES/$file" >/dev/null 2>&1; echo -e "Converting file to DOS format." || echo "${RED}${BOLD}There was a problem converting the file to DOS format."
             ## add file to dsk image
-            if [[ "$EMULATOR" == "rvm" ]]; then
-                add_ascii_dsk "$PATH_DISC" "$OUT/$file"
-            fi
+            add_file_to_disk_image "$OUT_DISC/$DISC" "$OUT_FILES/$file"
         fi
     done
     exit 0
 else
-    if [ ! -e "$IN_BAS/$1" ]; then
-        PRINT "ERROR" "$1 not found."
-    fi
-    file=$(basename "$1")
-    PRINT "TAG" "$file"
-    ## delete comments in bas files
-    rm_comments "$IN_BAS/$1" "$OUT/$file"
-    ## convert unix2dos
-    unix2dos "$OUT/$file" >/dev/null 2>&1; PRINT "OK" "Converting file to DOS format." || PRINT "ERROR" "There was a problem converting the file to DOS format."
-    ## add file to dsk image
-    if [[ "$EMULATOR" == "rvm" ]]; then
-        add_ascii_dsk "$PATH_DISC" "$OUT/$file"
+    file="$1"
+    ## Comprobamos si existe el fichero
+    result=$(check_path_existence "$SRC_FOLDER/$file")
+    if [ "$result" == "true" ]; then
+        delete_comments "$SRC_FOLDER/$file" "$OUT_FILES/$file"
+        ## convert unix2dos
+        unix2dos "$OUT_FILES/$file" >/dev/null 2>&1; echo -e "Converting file to DOS format." || echo "${RED}${BOLD}There was a problem converting the file to DOS format."
+        ## add file to dsk image
+        add_file_to_disk_image "$OUT_DISC/$DISC" "$OUT_FILES/$file"
+        exit 0
+    else
+        echo -e "${RED}\n$file Not found.${NORMAL}"
     fi
 fi
 
+exit 0
 

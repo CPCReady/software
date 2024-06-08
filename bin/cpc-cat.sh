@@ -9,7 +9,8 @@
 ##        ╚═════╝╚═╝      ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   
 ##
 ##-----------------------------LICENSE NOTICE------------------------------------
-##  This file is part of CPCReady Basic programation.
+##  This file is part of CPCReady - The command line interface (CLI) for 
+##  programming Amstrad CPC in Visual Studio Code..
 ##  Copyright (C) 2024 Destroyer
 ##
 ##  This program is free software: you can redistribute it and/or modify
@@ -17,6 +18,7 @@
 ##  the Free Software Foundation, either version 3 of the License, or
 ##  (at your option) any later version.
 ##
+##  This program is distributed in the hope that it will be useful,
 ##  This program is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -30,20 +32,21 @@
 HOMEBREW_PREFIX=$(brew --prefix)
 source $HOMEBREW_PREFIX/bin/cpc-library.sh
 
-## Function to display help message
+# Function to display help message
 function show_help {
-    CPCREADY
-    echo "List files."
+    echo
+    echo "List files in disc image."
     echo 
-    echo "Use: cat [option]"
+    echo "Use: cat"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
+    ready
 }
 
-## Check if the help parameter is provided
+# Check if the help parameter is provided
 case $1 in
     -v|--version)
-        show_version
+        cpcready_logo
         exit 0
         ;;
     -h|--help)
@@ -52,32 +55,21 @@ case $1 in
         ;;
 esac
 
-## Chequeamos si existe el archivo de variables.
-## si no existe salimos con error
-check_env_file
+## Chequeamos si es un proyecto CPCReady
+is_cpcready_project
 
-## Cargamos archivo de variables
-source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
+## Leemos las configuraciones del proyecto
+read_project_config
 
-## list files dsk
-if [[ "$EMULATOR" == "rvm" ]]; then
-    ## chequeamos nomenclatura
-    check_83_files_path $OUT_DISC
-    total_KB=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g' | awk '{sum += $3} END {print sum}')
-    free_KB=$((178 - total))
-    echo -e "Drive A: $DISC"
-    exit_result=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g')
-    if [[ ! "$exit_result" =~ "Fichier image non supporter" ]]; then
-        echo "$exit_result"
-    fi
-    echo -e "\n${free_KB}K free"
-    exit 0
+## Obtenemos el tamaño en KB de los ficheros
+total_KB=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g' | awk '{sum += $3} END {print sum}')
+free_KB=$((178 - total))
+
+## Mostramos el contenido de la imagen
+echo -e "Drive A: $DISC"
+exit_result=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g')
+if [[ ! "$exit_result" =~ "Fichier image non supporter" ]]; then
+    echo "$exit_result"
 fi
-
-## list files M4Board
-if [[ "$EMULATOR" == "m4" ]]; then
-    ## chequeamos nomenclatura
-    check_83_files_path $OUT
-    cat2cpc "$OUT"
-    exit 0
-fi
+echo -e "\n${free_KB}K free"
+exit 0

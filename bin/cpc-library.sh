@@ -9,7 +9,8 @@
 ##        ╚═════╝╚═╝      ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   
 ##
 ##-----------------------------LICENSE NOTICE------------------------------------
-##  This file is part of CPCReady Basic programation.
+##  This file is part of CPCReady - The command line interface (CLI) for 
+##  programming Amstrad CPC in Visual Studio Code..
 ##  Copyright (C) 2024 Destroyer
 ##
 ##  This program is free software: you can redistribute it and/or modify
@@ -18,6 +19,7 @@
 ##  (at your option) any later version.
 ##
 ##  This program is distributed in the hope that it will be useful,
+##  This program is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##  GNU Lesser General Public License for more details.
@@ -25,18 +27,6 @@
 ##  You should have received a copy of the GNU Lesser General Public License
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##------------------------------------------------------------------------------
-
-
-## VARIABLES SDK CPCREADY
-
-
-# if [[ "$OSTYPE" == "linux-gnu" ]]; then
-#    TEMPLATE_CPCEMU="$HOMEBREW_PREFIX/share/cpcemu/cpcemu0.cfg"
-# elif [[ "$OSTYPE" == "darwin"* ]]; then
-#    TEMPLATE_CPCEMU="$HOMEBREW_PREFIX/share/CPCemuMacOS.app/Contents/Resources/cpcemu0.cfg"
-# else
-#    PRINT ERROR "$OSTYPE Operating system NOT supported."
-# fi
 
 ## VARIABLES COLORES
 
@@ -70,6 +60,32 @@ CONFIG_CPCREADY="CPCReady.yml"
 # PATH_CONFIG_PROJECT="cfg"
 # CONFIG_CPCREADY="CPCReady.cfg"
 # CONFIG_CPCEMU="CPCEmu.cfg"
+
+##
+## obtiene las configuraciones del proyecto
+## como variables de entorno.
+##
+##   Returns:
+##       string(): variables de entorno
+##
+
+function read_project_config(){
+  # Ruta al archivo YAML
+  yaml_file="$CONFIG_CPCREADY"
+
+  # Leer los valores del archivo YAML usando yq
+  project=$(yq e '.project' $yaml_file)
+  disc=$(yq e '.disc' $yaml_file)
+  model=$(yq e '.model' $yaml_file)
+  mode=$(yq e '.mode' $yaml_file)
+
+  # Exportar las variables como variables de entorno
+  export PROJECT="$project"
+  export DISC="$disc"
+  export MODEL="$model"
+  export MODE="$mode"
+
+}
 
 
 ##
@@ -183,6 +199,176 @@ function create_disc_image {
         echo -e "${RED}\nThere was an error creating the disk image.${NORMAL}"
     fi
 }
+
+##
+## Verifica que el modo de pantalla sea correcto
+##
+##   Args:
+##       Screen Mode (str): Modo de pantalla (0,1,2)
+##   Returns:
+##       error: 0 ok <> Error
+##
+function check_screen_mode {
+   # pantallas soportadas
+   lista=("0" "1" "2")
+   for elemento in "${lista[@]}"; do
+      if [[ "$elemento" == "$1" ]]; then
+         return
+      fi
+   done
+   echo -e "${RED}\nScreen mode $1 not supported.${NORMAL}"
+   exit 1
+}
+
+##
+## Verifica que el modelo de CPC sea correcto
+##
+##   Args:
+##       CPC Model (str): Modo de pantalla (464,664,6128)
+##   Returns:
+##       error: 0 ok <> Error
+##
+
+function check_cpc_model {
+   # modelos soportados
+   lista=("464" "664" "6128")
+   for elemento in "${lista[@]}"; do
+      if [[ "$elemento" == "$1" ]]; then
+         return
+      fi
+   done
+   echo -e "${RED}\nCPC Model $1 not supported.${NORMAL}"
+   exit 1
+}
+
+##
+## muestra el modelo de cpc
+##
+##   Args:
+##       CPC Model (str): Modo de pantalla (464,664,6128)
+##   Returns:
+##       error: 0 ok <> Error
+##
+
+function show_model_cpc {
+case $1 in
+    6128)
+echo """ 
+ Amstrad 128K Microcomputer    (v3)
+ ©1985 Amstrad Consumer Electronics plc
+         and Locomotive Software Ltd.
+
+ BASIC 1.1${NORMAL}"""
+        ;;
+    664)
+echo """ 
+ Amstrad 64K Microcomputer    (v2)
+ ©1984 Amstrad Consumer Electronics plc
+         and Locomotive Software Ltd.
+
+ BASIC 1.1${NORMAL}"""
+        ;;
+    464)
+echo """ 
+ Amstrad 64K Microcomputer    (v1)
+ ©1984 Amstrad Consumer Electronics plc
+         and Locomotive Software Ltd.
+
+ BASIC 1.0${NORMAL}"""
+        ;;
+esac
+}
+
+##
+## Chequeamos si todos los archivos del proyecto cumplen
+## la norma 8:3
+##
+##   Returns:
+##       error: 0 ok <> Error
+##
+
+check_83_files_path() {
+    local path=$1
+
+    # Find all files and directories
+    find "$path" | while read -r entry; do
+        # Get the base name of the entry
+        base_name=$(basename "$entry")
+        
+        if [ -d "$entry" ]; then
+            # Check directory name length
+            if [ ${#base_name} -gt 8 ]; then
+               echo -e "${RED}\nDirectory name does not support more than 8 characters.: $entry${NORMAL}"
+            fi
+        elif [ -f "$entry" ]; then
+            # Check file name and extension length
+            file_name="${base_name%.*}"
+            extension="${base_name##*.}"
+            
+            if [ ${#file_name} -gt 8 ]; then
+               echo -e "${RED}\nFile name does not support more than 8 characters.: $entry${NORMAL}"
+            fi
+            
+            if [ "$file_name" != "$base_name" ] && [ ${#extension} -gt 3 ]; then
+               echo -e "${RED}\nFile extension name does not support more than 8 characters.: $entry${NORMAL}"
+            fi
+        fi
+    done
+    
+    return 0
+}
+
+##
+## añade archivos ascii a la imagen dsk
+##
+##   Args:
+##       DSK_IMAGE:  path y nombre de imagen
+##       ASCII_FILE: path y nombre de fichero a añadir
+##   Returns:
+##       error: 0 ok <> Error
+##
+
+function add_file_to_disk_image {
+   local DSK_IMAGE="$1"
+   local ASCII_FILE="$2"
+   if iDSK "$DSK_IMAGE" -i "$ASCII_FILE" -t 0 > /dev/null 2>&1; then
+      echo -e "File added to the disk image."
+   else
+      echo -e "${RED}\nThere was an error adding the file to the disk image.${NORMAL}"
+   fi
+}
+
+##
+## Elimina los comentarios "1 '" de los archivos bas
+##
+##   Args:
+##       archivo_origen:  path del archivo origen
+##       archivo_destino: path del archivo destino
+##   Returns:
+##       error: 0 ok <> Error
+##
+
+function delete_comments {
+    local archivo_origen="$1"
+    local archivo_destino="$2"
+
+    if [[ "$(uname)" == "Darwin" ]]; then
+        # macOS
+        sed -E '/^1 '\''/d' "$archivo_origen" > "$archivo_destino"
+        echo -e "Comments removed from the file."
+    else
+        # Linux u otros sistemas
+        sed '/^1 '\''/d' "$archivo_origen" > "$archivo_destino"
+        echo -e "Comments removed from the file."
+    fi
+}
+
+
+
+
+
+
+
 
 
 
@@ -587,36 +773,7 @@ function evaluaCPCModel {
    PRINT ERROR "CPC Model $1 not supported"
 }
 
-check_83_files_path() {
-    local path=$1
 
-    # Find all files and directories
-    find "$path" | while read -r entry; do
-        # Get the base name of the entry
-        base_name=$(basename "$entry")
-        
-        if [ -d "$entry" ]; then
-            # Check directory name length
-            if [ ${#base_name} -gt 8 ]; then
-               PRINT ERROR "Directory name does not support more than 8 characters.: $entry"
-            fi
-        elif [ -f "$entry" ]; then
-            # Check file name and extension length
-            file_name="${base_name%.*}"
-            extension="${base_name##*.}"
-            
-            if [ ${#file_name} -gt 8 ]; then
-               PRINT ERROR "File name does not support more than 8 characters.: $entry"
-            fi
-            
-            if [ "$file_name" != "$base_name" ] && [ ${#extension} -gt 3 ]; then
-               PRINT ERROR "File extension name does not support more than 8 characters.: $entry"
-            fi
-        fi
-    done
-    
-    return 0
-}
 
 function template_rvm {
 

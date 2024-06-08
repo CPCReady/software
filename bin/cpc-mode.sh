@@ -9,7 +9,8 @@
 ##        ╚═════╝╚═╝      ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   
 ##
 ##-----------------------------LICENSE NOTICE------------------------------------
-##  This file is part of CPCReady Basic programation.
+##  This file is part of CPCReady - The command line interface (CLI) for 
+##  programming Amstrad CPC in Visual Studio Code..
 ##  Copyright (C) 2024 Destroyer
 ##
 ##  This program is free software: you can redistribute it and/or modify
@@ -17,6 +18,7 @@
 ##  the Free Software Foundation, either version 3 of the License, or
 ##  (at your option) any later version.
 ##
+##  This program is distributed in the hope that it will be useful,
 ##  This program is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -32,22 +34,23 @@ source $HOMEBREW_PREFIX/bin/cpc-library.sh
 
 # Function to display help message
 function show_help {
-    CPCREADY
-    echo "Change screen mode."
+    echo
+    echo "Change screen mode or show the current one."
     echo 
     echo "Use: mode [option]"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
     echo "Option:"
-    echo "  [parameter]  Screen Mode. Options values [0,1,2]."
-    echo "               If the parameter is empty, shows the"
-    echo "               current value."
+    echo "  [parameter] Screen Mode [0,1,2] (optional)"
+    echo "              If no parameter is passed, it shows "
+    echo "              the current screen mode."
+    ready
 }
 
 # Check if the help parameter is provided
 case $1 in
     -v|--version)
-        show_version
+        cpcready_logo
         exit 0
         ;;
     -h|--help)
@@ -56,24 +59,27 @@ case $1 in
         ;;
 esac
 
-## Chequeamos si existe el archivo de variables.
-## si no existe salimos con error
-check_env_file
+## Chequeamos si es un proyecto CPCReady
+is_cpcready_project
 
-## Cargamos archivo de variables
-source "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY"
+## Leemos las configuraciones del proyecto
+read_project_config
 
-## Chequeamos si el parámetro es vacío
+# Chequeamos si se ha pasado parametro para crear o mostra nombre imagen
 if [ -z "$1" ]; then
-    echo
-    evaluaMode "$MODE"
-    PRINT "OK" "Screen Mode is $MODE"
+    check_screen_mode "$MODE"
+    echo -e "\nScreen Mode is $MODE"
     exit 0
 fi
 
-# Comprobamos que el modo de pantalla sea correcto
-evaluaMode "$1"
+## Chequeamos el modo de pantalla de las configuraciones
+check_screen_mode "$1"
 
-cpc-config "$PATH_CONFIG_PROJECT/$CONFIG_CPCREADY" MODE $1
-clear
-PRINT "OK" "Changed Screen Mode $1"
+## Modifica el modo de pantalla en las configuraciones del proyecto.
+yq e -i ".mode = $1" "$CONFIG_CPCREADY"
+
+## Mostramos mensaje
+echo -e "${GREEN}${BOLD}\nScreen Mode ${WHITE}${BOLD}$1 ${GREEN}${BOLD}configurated successfully"
+
+
+exit 0

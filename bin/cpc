@@ -9,7 +9,8 @@
 ##        ╚═════╝╚═╝      ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   
 ##
 ##-----------------------------LICENSE NOTICE------------------------------------
-##  This file is part of CPCReady Basic programation.
+##  This file is part of CPCReady - The command line interface (CLI) for 
+##  programming Amstrad CPC in Visual Studio Code..
 ##  Copyright (C) 2024 Destroyer
 ##
 ##  This program is free software: you can redistribute it and/or modify
@@ -98,34 +99,32 @@ case "$1" in
         ;;
     save)
         file="${2:-}" 
-        echo "Guardando información en $file"
-        
+        cpc-save.sh "$file"
         ;;
     run)
         file="${2:-}"
         echo "Ejecutando la tarea: $file"
-        
         ;;
     disc)     
         file="${2:-}"
-        echo "Creando disco con el nombre: $file"
-        
+        cpc-disc.sh "$file"
         ;;
     model)
         model="${2:-}" 
-        echo "Ejecutando el modelo: $model"
-        
+        cpc-model.sh "$model"
         ;;
     mode)
         mode="${2:-}"  
-        echo "Ejecutando el modo: $mode"
-        
+        cpc-mode.sh "$mode"
         ;;
     cat)
-        echo "Este es el comando cat, y no lleva parámetros."
+        cpc-cat.sh
         ;;
     dir)
-        echo "Este es el comando dir, y no lleva parámetros."
+        cpc-cat.sh
+        ;;
+    cls)
+        cpc-cls.sh
         ;;
     help)
         show_help
