@@ -164,7 +164,25 @@ function get_current_datetime(){
   echo "$fecha_y_hora"
 }
 
+##
+## Crea imagen de disco vacia
+##
+##   Args:
+##       image_name (str): path o ruta de la imagen de disco a crear
+##   Returns:
+##       error: 0 ok <> Error
+##
 
+function create_disc_image {
+    local DSK_IMAGE="$1"
+    ## Ejecuta el comando
+    iDSK "$DSK_IMAGE" -n > /dev/null 2>&1
+
+    ## Verifica el código de salida del comando
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}\nThere was an error creating the disk image.${NORMAL}"
+    fi
+}
 
 
 
