@@ -31,8 +31,6 @@
 HOMEBREW_PREFIX=$(brew --prefix)
 source $HOMEBREW_PREFIX/bin/cpc-library.sh
 
-VERSION="1.0.0"
-
 # Función de ayuda
 function show_help {
     echo -e "\nUse: $(basename "$0") command [<args>]"
@@ -61,7 +59,7 @@ function show_help {
 while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do
     case $1 in
         -v | --version )
-            echo "Versión: $VERSION"
+            cpc-about.sh
             exit
             ;;
         -h | --help )

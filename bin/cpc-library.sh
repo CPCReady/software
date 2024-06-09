@@ -110,7 +110,7 @@ function cpcready_logo {
    echo
    VERSION=$(get_version)
    echo "${WHITE}╔═╗╔═╗╔═╗  ┌──────────┐"
-   echo "${WHITE}║  ╠═╝║    │ ${NORMAL}${RED}██ ${GREEN}██ ${BLUE}██${NORMAL} │   ${WHITE}${BOLD}Version: ${GREEN}$VERSION${NORMAL}"
+   echo "${WHITE}║  ╠═╝║    │ ${NORMAL}${RED}██ ${GREEN}██ ${BLUE}██${NORMAL} │"
    echo "${WHITE}╚═╝╩  ╚═╝  └──────────┘"
 
    echo "Ready" >&2
@@ -417,26 +417,28 @@ function WARNING(){
   echo -e "${WHITE}${BOLD}[${YELLOW}${BOLD} WARNING ${WHITE}${BOLD}]${WHITE}${BOLD}[${BLUE}$file${WHITE}${BOLD}]${NORMAL}${YELLOW} $text${NORMAL}"
 }
 
+##
+## centra una cadena en otra
+##
+##   Args:
+##       string: cadena de texto
+##
+##   Returns:
+##       string cadena centrada en X espacios
 
 middle_tittle() {
     local cadena="$1"
     local longitud_cadena=${#cadena}
     local total_espacios=62
 
-    # Si la longitud de la cadena es mayor o igual a 68, la retornamos tal cual
     if [ $longitud_cadena -ge $total_espacios ]; then
         echo "$cadena"
         return
     fi
 
-    # Calcular los espacios a la izquierda y derecha
     local espacios_izquierda=$(( (total_espacios - longitud_cadena) / 2 ))
     local espacios_derecha=$(( total_espacios - longitud_cadena - espacios_izquierda ))
-
-    # Generar la cadena centrada
     local cadena_centrada="$(printf '%*s' $espacios_izquierda '')$cadena$(printf '%*s' $espacios_derecha '')"
-
-    # Imprimir la cadena centrada
     echo "$cadena_centrada"
 }
 

@@ -46,7 +46,7 @@ function show_help {
 # Check if the help parameter is provided
 case $1 in
     -v|--version)
-        cpcready_logo
+        cpc-about.sh
         exit 0
         ;;
     -h|--help)
