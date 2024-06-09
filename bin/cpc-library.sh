@@ -87,7 +87,6 @@ function read_project_config(){
 
 }
 
-
 ##
 ## obtiene la version
 ##
@@ -196,7 +195,7 @@ function create_disc_image {
 
     ## Verifica el código de salida del comando
     if [ $? -ne 0 ]; then
-        echo -e "${RED}\nThere was an error creating the disk image.${NORMAL}"
+        ERROR "DSK IMAGE" "There was an error creating the disk image."
     fi
 }
 
@@ -287,35 +286,25 @@ esac
 ##       error: 0 ok <> Error
 ##
 
-check_83_files_path() {
-    local path=$1
-
-    # Find all files and directories
-    find "$path" | while read -r entry; do
-        # Get the base name of the entry
-        base_name=$(basename "$entry")
-        
-        if [ -d "$entry" ]; then
-            # Check directory name length
-            if [ ${#base_name} -gt 8 ]; then
-               echo -e "${RED}\nDirectory name does not support more than 8 characters.: $entry${NORMAL}"
-            fi
-        elif [ -f "$entry" ]; then
-            # Check file name and extension length
-            file_name="${base_name%.*}"
-            extension="${base_name##*.}"
-            
-            if [ ${#file_name} -gt 8 ]; then
-               echo -e "${RED}\nFile name does not support more than 8 characters.: $entry${NORMAL}"
-            fi
-            
-            if [ "$file_name" != "$base_name" ] && [ ${#extension} -gt 3 ]; then
-               echo -e "${RED}\nFile extension name does not support more than 8 characters.: $entry${NORMAL}"
-            fi
-        fi
-    done
+check_file_83() {
+    local archivo="$1"
     
-    return 0
+    # Obtener el nombre del archivo sin la ruta
+    nombre_archivo=$(basename "$archivo")
+  
+    nombre="${nombre_archivo%.*}"
+    extension="${nombre_archivo##*.}"
+    
+    # Verificar si el nombre y la extensión exceden los límites
+    if [ ${#nombre} -gt 8 ]; then
+        ERROR $nombre_archivo "File name does not support more than 8 characters."
+        exit 1
+    fi
+
+    if [ ${#extension} -gt 3 ]; then
+        ERROR $nombre_archivo "Extension name does not support more than 3 characters."
+        exit 1
+    fi
 }
 
 ##
@@ -331,10 +320,12 @@ check_83_files_path() {
 function add_file_to_disk_image {
    local DSK_IMAGE="$1"
    local ASCII_FILE="$2"
+    file=$(adjust_string "$ASCII_FILE")
+    image=$(basename "$DSK_IMAGE")
    if iDSK "$DSK_IMAGE" -i "$ASCII_FILE" -t 0 > /dev/null 2>&1; then
-      echo -e "File added to the disk image."
+      OK $file "File added to the disk image $image."
    else
-      echo -e "${RED}\nThere was an error adding the file to the disk image.${NORMAL}"
+      ERROR $file "There was an error adding the file to the disk image."
    fi
 }
 
@@ -351,20 +342,103 @@ function add_file_to_disk_image {
 function delete_comments {
     local archivo_origen="$1"
     local archivo_destino="$2"
-
+    file=$(adjust_string "$archivo_origen")
     if [[ "$(uname)" == "Darwin" ]]; then
         # macOS
         sed -E '/^1 '\''/d' "$archivo_origen" > "$archivo_destino"
-        echo -e "Comments removed from the file."
     else
         # Linux u otros sistemas
         sed '/^1 '\''/d' "$archivo_origen" > "$archivo_destino"
-        echo -e "Comments removed from the file."
+    fi
+    OK $file "Comments removed from the file."
+}
+
+##
+## rellena con espacios un string
+##
+##   Args:
+##       cadena: cadena string
+##   Returns:
+##       cadena rellena de espacios
+##
+function adjust_string() {
+    local input="$1"
+    file=$(basename "$input")
+    local length=${#file}
+    if [ $length -lt 12 ]; then
+        printf "%-12s" "$file"
+    else
+        echo "${file:0:12}"
     fi
 }
 
+##
+## muestra error generando imagen de disco en consola
+##
+##   Args:
+##       fichero: Nombre de fichero
+##       descripcion: Descripcion del resultado
+##
+
+function ERROR(){
+  file=$(basename "$1")
+  file=$(adjust_string $file)
+  text="$2"
+  echo -e "${WHITE}${BOLD}[${RED}${BOLD}  ERROR  ${WHITE}${BOLD}]${WHITE}${BOLD}[${BLUE}$file${WHITE}${BOLD}]${NORMAL}${RED} $text${NORMAL}"
+}
+
+##
+## muestra OK generando imagen de disco en consola
+##
+##   Args:
+##       fichero: Nombre de fichero
+##       descripcion: Descripcion del resultado
+##
+
+function OK(){
+  file=$(basename "$1")
+  file=$(adjust_string $file)
+  text="$2"
+  echo -e "${WHITE}${BOLD}[${GREEN}${BOLD}   OK    ${WHITE}${BOLD}]${WHITE}${BOLD}[${BLUE}$file${WHITE}${BOLD}]${NORMAL} $text${NORMAL}"
+}
+
+##
+## muestra WARNING generando imagen de disco en consola
+##
+##   Args:
+##       fichero: Nombre de fichero
+##       descripcion: Descripcion del resultado
+##
+
+function WARNING(){
+  file=$(basename "$1")
+  file=$(adjust_string $file)
+  text="$2"
+  echo -e "${WHITE}${BOLD}[${YELLOW}${BOLD} WARNING ${WHITE}${BOLD}]${WHITE}${BOLD}[${BLUE}$file${WHITE}${BOLD}]${NORMAL}${YELLOW} $text${NORMAL}"
+}
 
 
+middle_tittle() {
+    local cadena="$1"
+    local longitud_cadena=${#cadena}
+    local total_espacios=62
+
+    # Si la longitud de la cadena es mayor o igual a 68, la retornamos tal cual
+    if [ $longitud_cadena -ge $total_espacios ]; then
+        echo "$cadena"
+        return
+    fi
+
+    # Calcular los espacios a la izquierda y derecha
+    local espacios_izquierda=$(( (total_espacios - longitud_cadena) / 2 ))
+    local espacios_derecha=$(( total_espacios - longitud_cadena - espacios_izquierda ))
+
+    # Generar la cadena centrada
+    local cadena_centrada="$(printf '%*s' $espacios_izquierda '')$cadena$(printf '%*s' $espacios_derecha '')"
+
+    # Imprimir la cadena centrada
+    echo "$cadena_centrada"
+}
 
 
 

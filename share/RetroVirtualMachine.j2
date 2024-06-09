@@ -29,9 +29,9 @@
       rvmPlayer_cpc6128(c,{
         disk: {
           type: 'dsk',
-          url: '{{ DISC }}\n',
+          url: '{{ DISC }}',
         },
-        command: 'run"DISC.BAS',
+        command: 'run"{{ command }}\n',
         warpFrames: 20*50,
         videoMode: 'hd'
       })

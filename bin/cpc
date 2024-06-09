@@ -102,8 +102,8 @@ case "$1" in
         cpc-save.sh "$file"
         ;;
     run)
-        file="${2:-}"
-        echo "Ejecutando la tarea: $file"
+        file="${2:-}" 
+        cpc-run.sh "$file"
         ;;
     disc)     
         file="${2:-}"
