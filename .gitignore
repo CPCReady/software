@@ -2,10 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-/Users/david/PERSONAL/CPCReady/bin/brew
-.envrc
+
 .idea/*
-bin/brew
 # C extensions
 *.so
 0COSAS/*
@@ -23,11 +21,10 @@ parts/
 sdist/
 var/
 wheels/
-# bin/brew
+
 share/python-wheels/
 *.egg-info/
 .installed.cfg
-.envrc
 *.egg
 MANIFEST
 tests/*
