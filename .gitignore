@@ -27,6 +27,7 @@ wheels/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
+.envrc
 *.egg
 MANIFEST
 tests/*
