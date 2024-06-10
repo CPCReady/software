@@ -5,6 +5,7 @@ __pycache__/
 /Users/david/PERSONAL/CPCReady/bin/brew
 .envrc
 .idea/*
+bin/brew
 # C extensions
 *.so
 0COSAS/*
