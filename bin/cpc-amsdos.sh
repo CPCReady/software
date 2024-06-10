@@ -28,16 +28,136 @@
 ##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##------------------------------------------------------------------------------
 
-## define variables y carga funciones
 HOMEBREW_PREFIX=$(brew --prefix)
 source $HOMEBREW_PREFIX/bin/cpc-library.sh
-cpcready_logo
-echo
-echo -e "${WHITE}${BOLD}CPCReady - The command line interface (CLI) for programming Amstrad CPC in Visual Studio Code${NORMAL}"  
-echo -e "${WHITE}© Destroyer 2024 - destroyer.dcf@gmail.com${NORMAL}"
-echo
-echo -e "${WHITE}Version: 1.0.0${NORMAL}"
-echo -e "${WHITE}CPCReady-Core Version: 1.0.0${NORMAL}"
-echo -e "${GREEN}See ${BLUE}https://github.com/CPCReady/software${GREEN} for more information.${NORMAL}"
-echo
+
+# Lista de comandos permitidos
+comandos_permitidos=("about" "run" "save" "mode" "model" "cat" "cls" "disc")
+
+# Verificar si un comando está en la lista de comandos permitidos
+function es_comando_permitido {
+    local comando=$1
+    for i in "${comandos_permitidos[@]}"; do
+        if [[ "$i" == "$comando" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Funciones para ejecutar los scripts específicos
+
+function disc {
+    $HOMEBREW_PREFIX/bin/cpc-disc.sh
+}
+
+function cls {
+    $HOMEBREW_PREFIX/bin/cpc-cls.sh
+}
+
+function cat {
+    $HOMEBREW_PREFIX/bin/cpc-cat.sh
+}
+
+function about {
+    $HOMEBREW_PREFIX/bin/cpc-about.sh
+}
+
+function run {
+    $HOMEBREW_PREFIX/bin/cpc-run.sh "$@"
+}
+
+function save {
+    $HOMEBREW_PREFIX/bin/cpc-save.sh "$@"
+}
+
+function mode {
+    $HOMEBREW_PREFIX/bin/cpc-mode.sh "$@"
+}
+
+function model {
+    clear
+    $HOMEBREW_PREFIX/bin/cpc-model.sh "$@"
+}
+
+# Función principal
+function main {
+    clear
+    ## Chequeamos si es un proyecto CPCReady
+    is_cpcready_project
+
+    ## Leemos las configuraciones del proyecto
+    read_project_config
+
+    show_model_cpc $MODEL
+
+    local comando
+    local parametros
+    local input
+    local historial=()
+
+    while true; do
+        # Mostrar el prompt
+        echo "Ready"
+        read -p "" input
+        
+        # Guardar el comando en el historial
+        historial+=("$input")
+        
+        # Separar el comando y los parámetros
+        read -a input_array <<< "$input"
+        comando=${input_array[0]}
+        parametros=${input_array[@]:1}
+        
+        # Verificar si el comando es 'exit', salir del bucle
+        if [[ "$comando" == "exit" ]]; then
+            ## Mostramos version e info si salimos
+            clear
+            about
+            break
+        fi
+        
+        # Verificar si el comando es permitido
+        if es_comando_permitido $comando; then
+            case $comando in
+                about)
+                    about
+                    ;;
+                run)
+                    run $parametros
+                    ;;
+                save)
+                    save $parametros
+                    ;;
+                model)
+                    model $parametros
+                    ;;
+                mode)
+                    mode $parametros
+                    ;;
+                cat)
+                    cat $parametros
+                    ;;
+                cls)
+                    cls $parametros
+                    ;;
+                disc)
+                    disc $parametros
+                    ;;
+                *)
+                    echo "Syntax error"
+                    ;;
+            esac
+
+            echo ""
+        else
+            ## Si el comando esta vacio no hacemos nada
+            if [[ ! -z "$comando" ]]; then
+                echo "Syntax Error"
+            fi
+        fi
+    done
+}
+
+main
 

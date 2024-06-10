@@ -68,9 +68,9 @@ read_project_config
 ## Monstramos cabezera
 # shellcheck disable=SC2154
 TITLE=$(middle_tittle "Generating disk image of the $project project")
-echo -e "\n${YELLOW}${BOLD}====================================================================${NORMAL}"
-echo -e "${WHITE}${BOLD}** $TITLE **"
-echo -e "${YELLOW}${BOLD}====================================================================${NORMAL}"
+echo -e "\n===================================================================="
+echo -e "${WHITE}** ${GREEN}${BOLD}$TITLE ${WHITE}**${NORMAL}"
+echo -e "===================================================================="
 
 ## volvemos a crear las carpetas
 mkdir -p "$OUT_FILES"
@@ -120,15 +120,14 @@ else
         ## add file to dsk image
         add_file_to_disk_image $OUT_DISC/$DISC $OUT_FILES/$file
     else
-        #echo -e "${WHITE}${BOLD}[${RED}${BOLD}ERROR       ${WHITE}${BOLD}]${RED} $file Not found.${NORMAL}"
         ERROR $file "Not found."
         exit 1
     fi
 fi
 
 TITLE=$(middle_tittle "Disk image generated Successfully")
-echo -e "\n${YELLOW}${BOLD}====================================================================${NORMAL}"
-echo -e "${GREEN}${BOLD}** $TITLE **"
-echo -e "${YELLOW}${BOLD}====================================================================${NORMAL}"
+echo -e "\n===================================================================="
+echo -e "${WHITE}** ${GREEN}${BOLD}$TITLE ${WHITE}**${NORMAL}"
+echo -e "===================================================================="
 exit 0
 

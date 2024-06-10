@@ -67,9 +67,9 @@ read_project_config
 
 ## Mostramos cabecera
 TITLE=$(middle_tittle "Run disk image $disc")
-echo -e "\n${YELLOW}${BOLD}====================================================================${NORMAL}"
-echo -e "${WHITE}${BOLD}** $TITLE **"
-echo -e "${YELLOW}${BOLD}====================================================================${NORMAL}"
+echo -e "\n===================================================================="
+echo -e "${WHITE}** ${GREEN}${BOLD}$TITLE ${WHITE}**${NORMAL}"
+echo -e "===================================================================="
 
 # Ruta al archivo YAML
 is_defined="false"
@@ -123,7 +123,7 @@ else
 fi
 
 TITLE=$(middle_tittle "Run image Successfully")
-echo -e "\n${YELLOW}${BOLD}====================================================================${NORMAL}"
-echo -e "${GREEN}${BOLD}** $TITLE **"
-echo -e "${YELLOW}${BOLD}====================================================================${NORMAL}"
+echo -e "\n===================================================================="
+echo -e "${WHITE}** ${GREEN}${BOLD}$TITLE ${WHITE}**${NORMAL}"
+echo -e "===================================================================="
 exit 0
