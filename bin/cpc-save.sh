@@ -30,7 +30,7 @@
 
 ## define variables y carga funciones
 HOMEBREW_PREFIX=$(brew --prefix)
-source $HOMEBREW_PREFIX/bin/cpc-library.sh
+source "$HOMEBREW_PREFIX/bin/cpc-library.sh"
 
 # Function to display help message
 function show_help {
@@ -66,6 +66,7 @@ is_cpcready_project
 read_project_config
 
 ## Monstramos cabezera
+# shellcheck disable=SC2154
 TITLE=$(middle_tittle "Generating disk image of the $project project")
 echo -e "\n${YELLOW}${BOLD}====================================================================${NORMAL}"
 echo -e "${WHITE}${BOLD}** $TITLE **"
@@ -77,7 +78,7 @@ mkdir -p "$OUT_FILES"
 ## Creamos imagen de disco
 create_disc_image $OUT_DISC/$DISC
 echo
-OK "DSKIMAGE" "Create disk image $DISC."
+OK "DISKIMAGE" "Create disk image $DISC."
 ## Si no pasamos parametro asumimos que hay que crear 
 ## la imagen DSK de todos los archivos de src
 if [ -z "$1" ]; then
@@ -97,7 +98,7 @@ if [ -z "$1" ]; then
                 exit 1
             fi
             ## add file to dsk image
-            add_file_to_disk_image "$OUT_DISC/$DISC" "$OUT_FILES/$file"
+            add_file_to_disk_image $OUT_DISC/$DISC $OUT_FILES/$file
         fi
     done
 else

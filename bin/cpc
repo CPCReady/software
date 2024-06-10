@@ -29,7 +29,7 @@
 ##------------------------------------------------------------------------------
 
 HOMEBREW_PREFIX=$(brew --prefix)
-source $HOMEBREW_PREFIX/bin/cpc-library.sh
+source "$HOMEBREW_PREFIX/bin/cpc-library.sh"
 
 # Función de ayuda
 function show_help {
