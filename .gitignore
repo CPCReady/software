@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 /Users/david/PERSONAL/CPCReady/bin/brew
 .envrc
-.idea
+.idea/*
 # C extensions
 *.so
 0COSAS/*
