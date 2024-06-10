@@ -30,7 +30,7 @@
 
 ## define variables y carga funciones
 HOMEBREW_PREFIX=$(brew --prefix)
-source $HOMEBREW_PREFIX/bin/cpc-library.sh
+source "$HOMEBREW_PREFIX/bin/cpc-library.sh"
 
 # Function to display help message
 function show_help {
