@@ -257,7 +257,8 @@ echo """
  ©1985 Amstrad Consumer Electronics plc
          and Locomotive Software Ltd.
 
- BASIC 1.1${NORMAL}"""
+ BASIC 1.1
+ ${NORMAL}"""
         ;;
     664)
 echo """ 
@@ -265,7 +266,8 @@ echo """
  ©1984 Amstrad Consumer Electronics plc
          and Locomotive Software Ltd.
 
- BASIC 1.1${NORMAL}"""
+ BASIC 1.1
+ ${NORMAL}"""
         ;;
     464)
 echo """ 
@@ -273,7 +275,8 @@ echo """
  ©1984 Amstrad Consumer Electronics plc
          and Locomotive Software Ltd.
 
- BASIC 1.0${NORMAL}"""
+ BASIC 1.0
+ ${NORMAL}"""
         ;;
 esac
 }

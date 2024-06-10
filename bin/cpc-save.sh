@@ -103,6 +103,7 @@ if [ -z "$1" ]; then
     done
 else
     file="$1"
+    file=${file//\"/}
     ## Comprobamos si existe el fichero
     result=$(check_path_existence "$SRC_FOLDER/$file")
     if [ "$result" == "true" ]; then

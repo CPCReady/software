@@ -101,6 +101,7 @@ if [ -z "$1" ]; then
     COMMAND="DISC.BAS"
 else
     COMMAND="$1"
+    COMMAND=${COMMAND//\"/}
 fi
 
 OK "CPC" "Model selected: $model"
