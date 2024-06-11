@@ -1,28 +1,17 @@
 {
-    "workbench.startupEditor": "newUntitledFile",
-    "terminal.integrated.profiles.osx": {
-      "zsh": {
-        "path": "zsh",
-        "args": []
-      }
-    },
-    "terminal.integrated.defaultProfile.osx": "zsh",
-    "terminal.integrated.tabs.enabled": true,
-    "terminal.integrated.tabs.location": "left",
-    "terminal.integrated.defaultLocation": "left",
-    "terminal.integrated.profiles": {
-      "leftTerminal": {
-        "path": "zsh",
-        "args": [],
-        "overrideName": false
-      },
-      "rightTerminal": {
-        "path": "zsh",
-        "args": ["-c", "echo 'Terminal en la derecha'"],
-        "overrideName": false
-      }
-    },
-    "terminal.integrated.defaultProfile": "leftTerminal",
-    "terminal.integrated.profiles.windows": {}
+  "workbench.colorCustomizations": {
+    "terminal.foreground": "#d9ff00",
+    "terminal.background": "#000080"
+},
+"terminal.integrated.profiles.osx": {
+  "amstrad": {
+      "path": "/Users/destroyer/Github/CPCReady/software/bin/amsdos",
+      "args": [
+          "${workspaceFolder}"
+      ],
+      "icon": "terminal-bash"
   }
-  
+},
+"terminal.integrated.defaultProfile.osx": "amstrad",
+"terminal.integrated.fontSize": 13
+}

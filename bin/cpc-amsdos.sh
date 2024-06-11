@@ -1,0 +1,163 @@
+#!/bin/bash
+##------------------------------------------------------------------------------
+##
+##        ██████╗██████╗  ██████╗██████╗ ███████╗ █████╗ ██████╗ ██╗   ██╗
+##       ██╔════╝██╔══██╗██╔════╝██╔══██╗██╔════╝██╔══██╗██╔══██╗╚██╗ ██╔╝
+##       ██║     ██████╔╝██║     ██████╔╝█████╗  ███████║██║  ██║ ╚████╔╝ 
+##       ██║     ██╔═══╝ ██║     ██╔══██╗██╔══╝  ██╔══██║██║  ██║  ╚██╔╝  
+##       ╚██████╗██║     ╚██████╗██║  ██║███████╗██║  ██║██████╔╝   ██║   
+##        ╚═════╝╚═╝      ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   
+##
+##-----------------------------LICENSE NOTICE------------------------------------
+##  This file is part of CPCReady - The command line interface (CLI) for 
+##  programming Amstrad CPC in Visual Studio Code..
+##  Copyright (C) 2024 Destroyer
+##
+##  This program is free software: you can redistribute it and/or modify
+##  it under the terms of the GNU Lesser General Public License as published by
+##  the Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  This program is distributed in the hope that it will be useful,
+##  This program is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU Lesser General Public License for more details.
+##
+##  You should have received a copy of the GNU Lesser General Public License
+##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##------------------------------------------------------------------------------
+
+HOMEBREW_PREFIX=$(brew --prefix)
+source $HOMEBREW_PREFIX/bin/cpc-library.sh
+
+# Lista de comandos permitidos
+comandos_permitidos=("about" "run" "save" "mode" "model" "cat" "cls" "disc")
+
+# Verificar si un comando está en la lista de comandos permitidos
+function es_comando_permitido {
+    local comando=$1
+    for i in "${comandos_permitidos[@]}"; do
+        if [[ "$i" == "$comando" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Funciones para ejecutar los scripts específicos
+
+function disc {
+    $HOMEBREW_PREFIX/bin/cpc-disc.sh
+}
+
+function cls {
+    $HOMEBREW_PREFIX/bin/cpc-cls.sh
+}
+
+function cat {
+    $HOMEBREW_PREFIX/bin/cpc-cat.sh
+}
+
+function about {
+    $HOMEBREW_PREFIX/bin/cpc-about.sh
+}
+
+function run {
+    $HOMEBREW_PREFIX/bin/cpc-run.sh "$@"
+}
+
+function save {
+    $HOMEBREW_PREFIX/bin/cpc-save.sh "$@"
+}
+
+function mode {
+    $HOMEBREW_PREFIX/bin/cpc-mode.sh "$@"
+}
+
+function model {
+    clear
+    $HOMEBREW_PREFIX/bin/cpc-model.sh "$@"
+}
+
+# Función principal
+function main {
+    clear
+    ## Chequeamos si es un proyecto CPCReady
+    is_cpcready_project
+
+    ## Leemos las configuraciones del proyecto
+    read_project_config
+
+    show_model_cpc $MODEL
+
+    local comando
+    local parametros
+    local input
+    local historial=()
+
+    while true; do
+        # Mostrar el prompt
+        echo "Ready"
+        read -p "" input
+        
+        # Guardar el comando en el historial
+        historial+=("$input")
+        
+        # Separar el comando y los parámetros
+        read -a input_array <<< "$input"
+        comando=${input_array[0]}
+        parametros=${input_array[@]:1}
+        
+        # Verificar si el comando es 'exit', salir del bucle
+        if [[ "$comando" == "exit" ]]; then
+            ## Mostramos version e info si salimos
+            clear
+            about
+            break
+        fi
+        
+        # Verificar si el comando es permitido
+        if es_comando_permitido $comando; then
+            case $comando in
+                about)
+                    about
+                    ;;
+                run)
+                    run $parametros
+                    ;;
+                save)
+                    save $parametros
+                    ;;
+                model)
+                    model $parametros
+                    ;;
+                mode)
+                    mode $parametros
+                    ;;
+                cat)
+                    cat $parametros
+                    ;;
+                cls)
+                    cls $parametros
+                    ;;
+                disc)
+                    disc $parametros
+                    ;;
+                *)
+                    echo "Syntax error"
+                    ;;
+            esac
+
+            echo ""
+        else
+            ## Si el comando esta vacio no hacemos nada
+            if [[ ! -z "$comando" ]]; then
+                echo "Syntax Error"
+            fi
+        fi
+    done
+}
+
+main
+

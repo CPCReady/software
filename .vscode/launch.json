@@ -5,16 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "SAVE",
-            "type": "debugpy",
+            "type": "bashdb",
             "request": "launch",
-            "module": "cpcready.main",
-            "cwd": "${workspaceFolder}/tests/prueba",
-            "justMyCode": true,
+            "name": "CPC",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/bin/cpc",
+            "args": ["--help"],
             "env": {
-                "PYTHONPATH": "${workspaceFolder}",
-            },
-            "args": ["save","DISC.BAS"] 
-        },
+                "HOMEBREW_PREFIX": "/Users/david/PERSONAL/CPCReady"
+            }
+        }
     ]
 }

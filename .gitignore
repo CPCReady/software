@@ -2,10 +2,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+build.sh
+.idea/*
 # C extensions
 *.so
-
+0COSAS/*
 # Distribution / packaging
 .Python
 build/
@@ -20,6 +21,8 @@ parts/
 sdist/
 var/
 wheels/
+builde.sh
+make.sh
 share/python-wheels/
 *.egg-info/
 .installed.cfg

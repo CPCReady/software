@@ -1,0 +1,135 @@
+#!/bin/bash
+##------------------------------------------------------------------------------
+##
+##        ██████╗██████╗  ██████╗██████╗ ███████╗ █████╗ ██████╗ ██╗   ██╗
+##       ██╔════╝██╔══██╗██╔════╝██╔══██╗██╔════╝██╔══██╗██╔══██╗╚██╗ ██╔╝
+##       ██║     ██████╔╝██║     ██████╔╝█████╗  ███████║██║  ██║ ╚████╔╝ 
+##       ██║     ██╔═══╝ ██║     ██╔══██╗██╔══╝  ██╔══██║██║  ██║  ╚██╔╝  
+##       ╚██████╗██║     ╚██████╗██║  ██║███████╗██║  ██║██████╔╝   ██║   
+##        ╚═════╝╚═╝      ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝   
+##
+##-----------------------------LICENSE NOTICE------------------------------------
+##  This file is part of CPCReady - The command line interface (CLI) for 
+##  programming Amstrad CPC in Visual Studio Code..
+##  Copyright (C) 2024 Destroyer
+##
+##  This program is free software: you can redistribute it and/or modify
+##  it under the terms of the GNU Lesser General Public License as published by
+##  the Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  This program is distributed in the hope that it will be useful,
+##  This program is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU Lesser General Public License for more details.
+##
+##  You should have received a copy of the GNU Lesser General Public License
+##  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##------------------------------------------------------------------------------
+
+HOMEBREW_PREFIX=$(brew --prefix)
+source "$HOMEBREW_PREFIX/bin/cpc-library.sh"
+
+# Función de ayuda
+function show_help {
+    echo -e "\nUse: $(basename "$0") command [<args>]"
+    echo 
+    echo "CPCReady - The command line interface (CLI) for programming Amstrad CPC in Visual Studio Code."
+    echo
+    echo "commands:"
+    echo "  about         Shows information about this project."
+    echo "  amsdos [PATH] Amstrad Terminal Program. (required)"
+    echo "  new    [NAME] Create a CPCReady project. (required)"
+    echo "  save   [FILE] Generates disk image with the project files. (optional)"
+    echo "  run    [FILE] Run the file passed as a parameter in the emulator (optional)"
+    echo "  disc   [FILE] Create disk image for the project. (optional)"
+    echo "  model  [CPC]  Change the project's CPC model. (optional)"
+    echo "  mode   [TYPE] Change the project's Screen mode. (optional)"
+    echo "  cat           Displays the contents of the disk image."
+    echo "  dir           Displays the contents of the disk image."
+    echo "  help          Show this help."
+    echo
+    echo "options:"
+    echo "  -v, --version  Show version information."
+    echo "  -h, --help     Show this help."
+}
+
+# Procesar las opciones
+while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do
+    case $1 in
+        -v | --version )
+            cpc-about.sh
+            exit
+            ;;
+        -h | --help )
+            show_help
+            exit
+            ;;
+    esac
+    shift
+done
+if [[ "$1" == '--' ]]; then shift; fi
+
+# Verificar que se haya proporcionado al menos un argumento
+if [ $# -lt 1 ]; then
+    echo -e "\n${RED}command required.${NORMAL}" 1>&2
+    show_help
+    exit 1
+fi
+
+# Procesar el comando
+case "$1" in
+    about)
+        parameter="${2:-}" 
+        cpc-about.sh $parameter
+        ;;
+    amsdos)
+        echo "amsdos"
+        ;;
+    new)
+        if [ -z "$2" ]; then
+            echo -e "\n${RED}${BOLD}Param Project name required.${NORMAL}" 1>&2
+            exit 1
+        fi
+        project="$2"
+        cpc-new.sh "$project"
+        ;;
+    save)
+        file="${2:-}" 
+        cpc-save.sh "$file"
+        ;;
+    run)
+        file="${2:-}" 
+        cpc-run.sh "$file"
+        ;;
+    disc)     
+        file="${2:-}"
+        cpc-disc.sh "$file"
+        ;;
+    model)
+        model="${2:-}" 
+        cpc-model.sh "$model"
+        ;;
+    mode)
+        mode="${2:-}"  
+        cpc-mode.sh "$mode"
+        ;;
+    cat)
+        cpc-cat.sh
+        ;;
+    dir)
+        cpc-cat.sh
+        ;;
+    cls)
+        cpc-cls.sh
+        ;;
+    help)
+        show_help
+        ;;
+    *)
+        echo -e "\n${RED}${BOLD}Command not supported.${NORMAL}" 1>&2
+        show_help
+        exit 1
+        ;;
+esac
