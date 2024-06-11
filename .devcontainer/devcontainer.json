@@ -1,0 +1,32 @@
+
+{
+	"name": "CPCReady-poetry",
+	"image": "sdk-develop-image:latest",
+	"mounts": [
+		"source=${env:HOME}/.ssh,target=/home/amstrad/.ssh,type=bind,consistency=cached"
+	  ],
+	"customizations": {
+		"vscode": {
+		  "extensions": [
+			"donjayamanne.python-extension-pack",
+			"github.remotehub",
+			"github.vscode-github-actions",
+			"bierner.github-markdown-preview",
+			"ms-vscode.vscode-github-issue-notebooks",
+			"cpcready.basic-language-extension",
+			"ms-vscode.makefile-tools",
+			"ritwickdey.liveserve",
+			"ms-vscode.live-server"]
+		}
+	},	
+	"containerEnv": {
+		"PROJECT_TEST": "prueba",
+		"GITHUB_TOKEN": "",
+		"GITHUB_USER": "",
+		"GIT_USER_NAME": "destroyer",
+		"GIT_USER_EMAIL":"destroyer.dcf@gmail.com"
+	},
+	"postCreateCommand": {
+		"shell": "zsh"
+	}
+}

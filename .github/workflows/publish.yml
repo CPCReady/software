@@ -1,0 +1,55 @@
+name: publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: version to compile
+        required: true
+      release:
+        description: si se crea release
+        required: false
+        default: 'false'
+
+jobs:
+  publish-release:
+    permissions: write-all 
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Extract version from VERSION file
+      id: extract_version
+      run: |
+        VERSION=${{ github.event.inputs.version }}
+        echo "Version: $VERSION"
+        echo "::set-output name=version::$VERSION"
+        
+    - name: compile CPCReady
+      run: |
+        tar -czvf CPCReady-${{ steps.extract_version.outputs.version }}.tar.gz bin share
+
+    - name: Calculate SHA-256
+      id: sha256
+      run: |
+        SHA256_HASH=$(sha256sum CPCReady-${{ steps.extract_version.outputs.version }}.tar.gz | awk '{ print $1 }')
+        echo "SHA-256: $SHA256_HASH"
+        echo "::set-output name=sha256::$SHA256_HASH"
+      shell: bash        
+  
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      if: ${{ github.event.inputs.release == 'true' }}
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: CPCReady-${{ steps.extract_version.outputs.version }}.tar.gz
+        asset_name: CPCReady-${{ steps.extract_version.outputs.version }}.tar.gz
+        tag: ${{ steps.extract_version.outputs.version }}
+        overwrite: true
+        body: "${{ steps.sha256.outputs.sha256 }}"

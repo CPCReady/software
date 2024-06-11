@@ -5,7 +5,7 @@
 },
 "terminal.integrated.profiles.osx": {
   "amstrad": {
-      "path": "amsdos",
+      "path": "/Users/destroyer/Github/CPCReady/software/bin/amsdos",
       "args": [
           "${workspaceFolder}"
       ],

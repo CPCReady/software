@@ -1,0 +1,162 @@
+name: publish-release
+
+on:
+  push:
+    branches:
+      - 51-add-cpcemu
+
+# on:
+#   pull_request:
+#     branches:
+#       - main
+
+jobs:
+  publish-release:
+    permissions: write-all 
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: CPCReady
+            asset_name: CPCReady-linux-amd64
+          - os: macos-latest
+            artifact_name: CPCReady
+            asset_name: CPCReady-macos-amd64
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install zip
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      run: sudo apt-get install zip
+
+    - name: Extract version from VERSION file
+      id: extract_version
+      run: |
+        VERSION=$(cat VERSION)
+        echo "Version: $VERSION"
+        echo "::set-output name=version::$VERSION"
+
+    - name: Download Retrovirtualmachine linux
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      run: |
+        cd emulators
+        wget https://static.retrovm.org/release/beta1/linux/x64/RetroVirtualMachine.2.0.beta-1.r7.linux.x64.zip -O RetroVirtualMachine.zip
+        unzip RetroVirtualMachine.zip
+        rm RetroVirtualMachine.zip
+        rm cheatsheet.pdf
+        rm -rf rvm.app
+        rm -rf CPCemuMacOS.app
+        chmod 777 RetroVirtualMachine
+    - name: Download Retrovirtualmachine mac
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: |
+        cd emulators
+        rm -rf cpcemu
+
+    - name: compile ldir
+      run: |
+        cd tools/ldir
+        mkdir dist
+        gcc src/ldir.c -o dist/ldir
+  
+    - name: move ldir
+      run: |
+        cp tools/ldir/dist/ldir bin/ldir
+        chmod 777 bin/ldir
+  
+    - name: upload ldir
+      uses: actions/upload-artifact@v4
+      with:
+        name: ldir-${{ matrix.os }}
+        path: bin/ldir
+
+    - name: compile configurations
+      run: |
+        cd tools/configuration
+        mkdir dist
+        gcc src/configuration.c -o dist/configuration
+
+    - name: move configurations
+      run: |
+        cp tools/configuration/dist/configuration bin/configuration
+        chmod 777 bin/configuration
+
+    - name: upload configurations
+      uses: actions/upload-artifact@v4
+      with:
+        name: configuration-${{ matrix.os }}
+        path: bin/configuration
+
+    - name: compile amstrad-console mac
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: |
+        cd tools/amstrad-console
+        pip3 install poetry --break-system-packages
+        poetry version ${{ steps.extract_version.outputs.version }}
+        poetry install
+        poetry build
+
+    - name: compile amstrad-console linux
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      run: |
+        cd tools/amstrad-console
+        pip3 install poetry
+        poetry version ${{ steps.extract_version.outputs.version }}
+        poetry install
+        poetry build
+
+    - name: move amstrad-console
+      run: |
+        cp tools/amstrad-console/dist/console-${{ steps.extract_version.outputs.version }}-py3-none-any.whl bin/lib/console-${{ steps.extract_version.outputs.version }}-py3-none-any.whl
+        ls -l bin/lib
+
+    - name: upload amstrad console
+      uses: actions/upload-artifact@v4
+      with:
+        name: console-${{ matrix.os }}-${{ steps.extract_version.outputs.version }}-py3-none-any.whl
+        path: bin/lib/console-${{ steps.extract_version.outputs.version }}-py3-none-any.whl
+
+    - name: make idsk
+      run: |
+        cd tools/IDSK+
+        mkdir bin
+        make clean
+        make
+
+    - name: move configurations
+      run: |
+        mkdir -p bin/tools
+        cp tools/IDSK+/bin/iDSK bin/tools/iDSK
+        chmod 777 bin/tools/iDSK
+        ls -l bin
+
+    - name: upload amstrad console
+      uses: actions/upload-artifact@v4
+      with:
+        name: iDSK-${{ matrix.os }}
+        path: bin/iDSK
+  
+    - name: Create zip file
+      run: zip -r ${{ matrix.artifact_name }}.zip . -x "*.git*" "*.github*" "*.devcontainer*" "*.vscode*" "tools*"
+
+    - name: Get Changelog Entry
+      id: changelog_reader
+      uses: mindsers/changelog-reader-action@v2
+      with:
+        validation_level: warn
+        version: ${{ steps.extract_version.outputs.version }}
+        path: GHANGELOG.md
+
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ matrix.artifact_name }}.zip
+        asset_name: ${{ matrix.asset_name }}.zip
+        tag: v${{ steps.extract_version.outputs.version }}
+        overwrite: true
+        body: ${{ steps.changelog_reader.outputs.changes }}
+
