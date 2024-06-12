@@ -46,8 +46,8 @@ mkdir -p dist
 VERSION="$1"
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-gh workflow run publish.yml --repo https://github.com/CPCReady/software --ref $CURRENT_BRANCH -f version=$VERSION -f release=true
-sleep 1
+gh workflow run publish.yml --repo https://github.com/CPCReady/software --ref $CURRENT_BRANCH -f version=$VERSION -f release=false
+sleep 3
 run_id=$(gh run list --repo https://github.com/CPCReady/software --workflow=publish.yml --branch=$CURRENT_BRANCH --limit 1 --json databaseId --jq '.[0].databaseId')
 
 if [ -z "$run_id" ]; then

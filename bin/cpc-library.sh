@@ -116,7 +116,7 @@ function cpcready_logo {
 ##       file (str): nombre de fichero
 ##
 
-replace_spaces() {
+function replace_spaces() {
     local input_string="$1"
     local output_string="${input_string// /_}"
     echo "$output_string"
@@ -146,7 +146,7 @@ function is_cpcready_project {
 ##       bool: True si existe, False si no existe
 ##
 
-check_path_existence() {
+function check_path_existence() {
     local path="$1"
 
     if [ -e "$path" ]; then
@@ -291,12 +291,12 @@ check_file_83() {
     
     # Verificar si el nombre y la extensión exceden los límites
     if [ ${#nombre} -gt 8 ]; then
-        ERROR $nombre_archivo "File name does not support more than 8 characters."
+        log "ERROR" $nombre_archivo "File name does not support more than 8 characters."
         exit 1
     fi
 
     if [ ${#extension} -gt 3 ]; then
-        ERROR $nombre_archivo "Extension name does not support more than 3 characters."
+        log "ERROR" $nombre_archivo "Extension name does not support more than 3 characters."
         exit 1
     fi
 }
@@ -317,9 +317,9 @@ function add_file_to_disk_image {
     file=$(adjust_string "$ASCII_FILE")
     image=$(basename "$DSK_IMAGE")
    if iDSK "$DSK_IMAGE" -i "$ASCII_FILE" -t 0 > /dev/null 2>&1; then
-      OK $file "File added to the disk image $image."
+      log "OK" $file "File added to the disk image $image."
    else
-      ERROR $file "There was an error adding the file to the disk image."
+      log "ERROR" $file "There was an error adding the file to the disk image."
    fi
 }
 
@@ -344,7 +344,7 @@ function delete_comments {
         # Linux u otros sistemas
         sed '/^1 '\''/d' "$archivo_origen" > "$archivo_destino"
     fi
-    OK $file "Comments removed from the file."
+    log "OK" $file "Comments removed from the file."
 }
 
 ##
@@ -420,7 +420,7 @@ function WARNING(){
 ##   Returns:
 ##       string cadena centrada en X espacios
 
-middle_tittle() {
+function middle_tittle() {
     local cadena="$1"
     local longitud_cadena=${#cadena}
     local total_espacios=62
@@ -446,7 +446,7 @@ middle_tittle() {
 ##   Returns:
 ##       string cadena centrada en X espacios
 
-compare_versions() {
+function compare_versions() {
   if [ "$1" == "$2" ]; then
     return 0
   fi
@@ -472,4 +472,34 @@ compare_versions() {
   done
 
   return 0
+}
+
+##
+## muestra en pantalla
+##
+##   Args:
+##       level: nivel de log
+##       file : nombre de fichero
+##       text: descripcion
+##
+##   Returns:
+##       muestra log en pantalla
+
+function log(){
+  level="$1"
+  file="$2"
+  text="$3"
+  # Ajustar la longitud de la segunda columna a 13 caracteres🚀
+  file=$(printf '%-12s' "$file")
+
+  # Imprimir el mensaje formateado con el nivel y el archivo en los colores correspondientes
+  if [ "$level" = "OK" ]; then
+      printf "%-1s ${WHITE}${BOLD}=>${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${WHITE}${BOLD}=>${NORMAL} %s\n" "🟩" "$file" "$text"
+  elif [ "$level" = "WARNING" ]; then
+      printf "%-1s ${WHITE}${BOLD}=>${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${WHITE}${BOLD}=>${NORMAL} %s\n" "🟨" "$file" "$text"
+  elif [ "$level" = "ERROR" ]; then
+      printf "%-1s ${WHITE}${BOLD}=>${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${WHITE}${BOLD}=>${NORMAL} %s\n" "🟥" "$file" "$text"
+  else
+      printf "%-7s ${BOLD}${WHITE}|${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${BOLD}${WHITE}|${NORMAL} %s\n" "⬜" "$file" "$text"
+  fi
 }
