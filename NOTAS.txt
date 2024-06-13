@@ -54,3 +54,11 @@ if [ -f "dev.env" ]; then
   echo -e "${YELLOW_BOLD}Cargado variable de entorno de desarrollo${RESET}"
   cat dev.env
 fi
+
+Descarga repo homebrew-core
+crear rama cpcready
+desde el repo brew tap --force homebrew/core
+brew audit --new Formula/c/cpcready.rb
+brew audit cpcready
+brew style cpcready
+
