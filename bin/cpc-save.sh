@@ -78,7 +78,7 @@ mkdir -p "$OUT_FILES"
 ## Creamos imagen de disco
 create_disc_image $OUT_DISC/$DISC
 echo
-OK "DISKIMAGE" "Create disk image $DISC."
+log "OK" "DISK" "Create disk image $DISC."
 ## Si no pasamos parametro asumimos que hay que crear 
 ## la imagen DSK de todos los archivos de src
 if [ -z "$1" ]; then
@@ -92,9 +92,10 @@ if [ -z "$1" ]; then
             archive=$(adjust_string "$file")
             unix2dos $OUT_FILES/$file >/dev/null 2>&1
             if [ $? -eq 0 ]; then
-                OK "$file" "Converting file to DOS format."
+                # OK "$file" "Converting file to DOS format."
+                log "OK" "$file" "Converting file to DOS format."
             else
-                ERROR $file "There was a problem converting the file to DOS format."
+                log "ERROR" "$file" "There was a problem converting the file to DOS format."
                 exit 1
             fi
             ## add file to dsk image

@@ -1,11 +1,11 @@
 {
   "workbench.colorCustomizations": {
-    "terminal.foreground": "#d9ff00",
-    "terminal.background": "#000080"
+    "terminal.foreground": "#21e827",
+    "terminal.background": "#00000e"
 },
 "terminal.integrated.profiles.osx": {
   "amstrad": {
-      "path": "/Users/destroyer/Github/CPCReady/software/bin/amsdos",
+      "path": "amsdos",
       "args": [
           "${workspaceFolder}"
       ],
