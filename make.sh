@@ -44,7 +44,7 @@ mkdir -p dist
 # APPLE_SILICON_VERSION="11"
 # APPLE_x86_64_VERSION="10.14"
 VERSION="$1"
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+CURRENT_BRANCH=main #$(git rev-parse --abbrev-ref HEAD)
 
 gh workflow run publish.yml --repo https://github.com/CPCReady/software --ref $CURRENT_BRANCH -f version=$VERSION -f release=false
 sleep 3
