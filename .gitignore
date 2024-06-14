@@ -7,6 +7,8 @@ build.sh
 # C extensions
 *.so
 0COSAS/*
+bin/brew
+bin/iDSK
 # Distribution / packaging
 .Python
 build/
@@ -22,6 +24,7 @@ sdist/
 var/
 dev.env
 NOTAS.TXT
+make.sh
 builde.sh
 wheels/
 builde.sh
