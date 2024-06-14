@@ -3,15 +3,15 @@
     "terminal.foreground": "#21e827",
     "terminal.background": "#00000e"
 },
-"terminal.integrated.profiles.osx": {
-  "amstrad": {
-      "path": "amsdos",
-      "args": [
-          "${workspaceFolder}"
-      ],
-      "icon": "terminal-bash"
-  }
-},
-"terminal.integrated.defaultProfile.osx": "amstrad",
-"terminal.integrated.fontSize": 13
+// "terminal.integrated.profiles.osx": {
+//   "amstrad": {
+//       "path": "amsdos",
+//       "args": [
+//           "${workspaceFolder}"
+//       ],
+//       "icon": "terminal-bash"
+//   }
+// },
+// "terminal.integrated.defaultProfile.osx": "amstrad",
+// "terminal.integrated.fontSize": 13
 }
