@@ -40,7 +40,6 @@ function show_help {
     echo "Use: cat"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
-    ready
 }
 
 # Check if the help parameter is provided

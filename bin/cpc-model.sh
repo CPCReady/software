@@ -82,7 +82,7 @@ yq e -i ".model = $1" "$CONFIG_CPCREADY"
 ## Mostramos mensaje
 clear
 show_model_cpc $1
-echo -e "\nReady\n${GREEN}${BOLD}CPC Model ${WHITE}${BOLD}$1 ${GREEN}${BOLD}configurated successfully${NORMAL}\nReady\n█"
+# echo -e "\nReady\n${GREEN}${BOLD}CPC Model ${WHITE}${BOLD}$1 ${GREEN}${BOLD}configurated successfully${NORMAL}\nReady\n█"
 exit 0
 
 

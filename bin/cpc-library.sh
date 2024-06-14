@@ -206,7 +206,7 @@ function check_screen_mode {
          return
       fi
    done
-   echo -e "${RED}\nScreen mode $1 not supported.${NORMAL}"
+   echo -e "${RED}\nImproper argument.${NORMAL}"
    exit 1
 }
 
