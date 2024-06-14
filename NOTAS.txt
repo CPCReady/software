@@ -56,9 +56,11 @@ if [ -f "dev.env" ]; then
 fi
 
 Descarga repo homebrew-core
-crear rama cpcready
+ git checkout -b cpcready  
+ nano Formula/cpcready.rb
 desde el repo brew tap --force homebrew/core
 brew audit --new Formula/c/cpcready.rb
+brew test cpcready
 brew audit cpcready
 brew style cpcready
 
