@@ -20,6 +20,9 @@ lib64/
 parts/
 sdist/
 var/
+dev.env
+NOTAS.TXT
+builde.sh
 wheels/
 builde.sh
 make.sh
