@@ -206,7 +206,7 @@ function check_screen_mode {
          return
       fi
    done
-   echo -e "${RED}\nScreen mode $1 not supported.${NORMAL}"
+   echo -e "${RED}\nImproper argument.${NORMAL}"
    exit 1
 }
 
@@ -227,7 +227,7 @@ function check_cpc_model {
          return
       fi
    done
-   echo -e "${RED}\nCPC Model $1 not supported.${NORMAL}"
+   echo -e "${RED}\nImproper argument.${NORMAL}"
    exit 1
 }
 
@@ -502,4 +502,28 @@ function log(){
   else
       printf "%-7s ${BOLD}${WHITE}|${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${BOLD}${WHITE}|${NORMAL} %s\n" "⬜" "$file" "$text"
   fi
+}
+
+check_disc() {
+    if [ -z "$1" ]; then
+        echo -e "\nDrive A: disc missing"
+        echo
+        read -p "Retry, Ignore or Cancel? " choice
+        
+        case "$choice" in
+            [Rr])
+                check_disc
+                ;;
+            [Ii])
+                check_disc
+                ;;
+            [Cc])
+                echo -e "\nBad command"
+                exit 1
+                ;;
+            *)
+                check_disc
+                ;;
+        esac
+    fi
 }

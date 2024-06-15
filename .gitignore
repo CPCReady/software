@@ -7,6 +7,10 @@ build.sh
 # C extensions
 *.so
 0COSAS/*
+.vscode
+.devcontainer
+bin/brew
+bin/iDSK
 # Distribution / packaging
 .Python
 build/
@@ -20,6 +24,10 @@ lib64/
 parts/
 sdist/
 var/
+dev.env
+NOTAS.TXT
+make.sh
+builde.sh
 wheels/
 builde.sh
 make.sh

@@ -40,7 +40,6 @@ function show_help {
     echo "Use: cat"
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
-    ready
 }
 
 # Check if the help parameter is provided
@@ -60,6 +59,9 @@ is_cpcready_project
 
 ## Leemos las configuraciones del proyecto
 read_project_config
+
+# Chequeamos si variable disc esta vacioa
+check_disc "$DISC"
 
 ## Obtenemos el tamaño en KB de los ficheros
 total_KB=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g' | awk '{sum += $3} END {print sum}')

@@ -32,7 +32,7 @@ HOMEBREW_PREFIX=$(brew --prefix)
 source $HOMEBREW_PREFIX/bin/cpc-library.sh
 
 # Lista de comandos permitidos
-comandos_permitidos=("about" "run" "save" "mode" "model" "cat" "cls" "disc")
+comandos_permitidos=("about" "run" "save" "mode" "model" "cat" "dir" "cls" "disc")
 
 # Verificar si un comando está en la lista de comandos permitidos
 function es_comando_permitido {
@@ -56,6 +56,10 @@ function cls {
 }
 
 function cat {
+    $HOMEBREW_PREFIX/bin/cpc-cat.sh
+}
+
+function dir {
     $HOMEBREW_PREFIX/bin/cpc-cat.sh
 }
 
@@ -136,6 +140,9 @@ function main {
                     mode $parametros
                     ;;
                 cat)
+                    cat $parametros
+                    ;;
+                dir)
                     cat $parametros
                     ;;
                 cls)

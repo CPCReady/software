@@ -116,13 +116,16 @@ case "$1" in
         cpc-mode.sh "$mode"
         ;;
     cat)
-        cpc-cat.sh
+        options="${2:-}" 
+        cpc-cat.sh "$options"
         ;;
     dir)
-        cpc-cat.sh
+        options="${2:-}" 
+        cpc-cat.sh "$options"
         ;;
     cls)
-        cpc-cls.sh
+        options="${2:-}"
+        cpc-cls.sh "$options"
         ;;
     help)
         show_help

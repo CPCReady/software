@@ -59,7 +59,7 @@ case $1 in
         ;;
 esac
 
-## Chequeamos si es un proyecto CPCReady
+## Chequeamos si es un proyecto CPCReadycpc
 is_cpcready_project
 
 ## Leemos las configuraciones del proyecto
@@ -67,10 +67,8 @@ read_project_config
 
 # Chequeamos si se ha pasado parametro para crear o mostra nombre imagen
 if [ -z "$1" ]; then
-    ## Chequeamos el modelo de cpc de las configuraciones
-    check_cpc_model "$MODEL"
-    show_model_cpc $MODEL
-    exit 0
+    echo -e "${RED}\nOperand missing.${NORMAL}"
+    exit 1
 fi
 
 ## Chequeamos el modelo de cpc de las configuraciones
@@ -82,7 +80,7 @@ yq e -i ".model = $1" "$CONFIG_CPCREADY"
 ## Mostramos mensaje
 clear
 show_model_cpc $1
-echo -e "\nReady\n${GREEN}${BOLD}CPC Model ${WHITE}${BOLD}$1 ${GREEN}${BOLD}configurated successfully${NORMAL}\nReady\n█"
+# echo -e "\nReady\n${GREEN}${BOLD}CPC Model ${WHITE}${BOLD}$1 ${GREEN}${BOLD}configurated successfully${NORMAL}\nReady\n█"
 exit 0
 
 

@@ -41,10 +41,7 @@ function show_help {
     echo "  -h, --help     Show this help message."
     echo "  -v, --version  Show version this software."
     echo "Option:"
-    echo "  [parameter] Screen Mode [0,1,2] (optional)"
-    echo "              If no parameter is passed, it shows "
-    echo "              the current screen mode."
-    ready
+    echo "  [parameter] Screen Mode [0,1,2] (required)"
 }
 
 # Check if the help parameter is provided
@@ -67,9 +64,8 @@ read_project_config
 
 # Chequeamos si se ha pasado parametro para crear o mostra nombre imagen
 if [ -z "$1" ]; then
-    check_screen_mode "$MODE"
-    echo -e "\nScreen Mode is $MODE"
-    exit 0
+    echo -e "${RED}\nOperand missing.${NORMAL}"
+    exit 1
 fi
 
 ## Chequeamos el modo de pantalla de las configuraciones
@@ -78,8 +74,16 @@ check_screen_mode "$1"
 ## Modifica el modo de pantalla en las configuraciones del proyecto.
 yq e -i ".mode = $1" "$CONFIG_CPCREADY"
 
-## Mostramos mensaje
-echo -e "${GREEN}${BOLD}\nScreen Mode ${WHITE}${BOLD}$1 ${GREEN}${BOLD}configurated successfully"
-
-
+## asignamos un valor de tamaño de fuente en funcion del modo
+if [[ "$1" == "0" ]]; then
+    size=16
+elif [[ "$1" == "1" ]]; then
+    size=13
+elif [[ "$1" == "2" ]]; then
+    size=11
+fi
+## modificamos el valor del tamaño 
+jq --arg size "$size" '.["terminal.integrated.fontSize"] = ($size | tonumber)' "$VSCODE_FOLDER/settings.json" > "$VSCODE_FOLDER/temp.json" && mv "$VSCODE_FOLDER/temp.json" "$VSCODE_FOLDER/settings.json"
+## borramos pantalla
+clear
 exit 0
