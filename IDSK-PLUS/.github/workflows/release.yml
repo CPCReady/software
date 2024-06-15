@@ -1,0 +1,67 @@
+name: build IDSK-PLUS
+
+# on:
+#   push:
+#     branches:
+#       - main 
+on:
+  pull_request:
+    branches:
+      - main
+
+
+
+jobs:
+  build-idsk-plus:
+    permissions: write-all 
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: iDSK
+            asset_name: iDSK-linux-amd64
+          - os: macos-latest
+            artifact_name: iDSK
+            asset_name: iDSK-macos-amd64
+            architecture: intel
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3.1.0
+
+      - name: make idsk
+        run: |
+          mkdir bin
+          make clean
+          make
+          ls -R
+
+      - name: Extract version from VERSION file
+        id: extract_version
+        run: |
+          VERSION=$(cat VERSION)
+          echo "Version: $VERSION"
+          echo "::set-output name=version::$VERSION"
+
+      # - name: Read release.md file
+      #   run: |
+      #     RELEASE_BODY=$(cat GHANGELOG.md)
+      #     echo "::set-output name=release_body::$RELEASE_BODY"
+      - name: Get Changelog Entry
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          validation_level: warn
+          version: ${{ steps.extract_version.outputs.version }}
+          path: GHANGELOG.md
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: bin/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: v${{ steps.extract_version.outputs.version }}
+          overwrite: true
+          body: ${{ steps.changelog_reader.outputs.changes }}
