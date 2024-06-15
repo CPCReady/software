@@ -60,6 +60,9 @@ is_cpcready_project
 ## Leemos las configuraciones del proyecto
 read_project_config
 
+# Chequeamos si variable disc esta vacioa
+check_disc "$DISC"
+
 ## Obtenemos el tamaño en KB de los ficheros
 total_KB=$(iDSK $OUT_DISC/$DISC -l | sed -e 's/://g' -e 's/ Ko/K/g' | awk '{sum += $3} END {print sum}')
 free_KB=$((178 - total))
