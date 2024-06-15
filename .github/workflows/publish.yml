@@ -33,7 +33,7 @@ jobs:
         
     - name: compile CPCReady
       run: |
-        tar -czvf CPCReady-${{ steps.extract_version.outputs.version }}.tar.gz bin share
+        tar -czvf CPCReady-${{ steps.extract_version.outputs.version }}.tar.gz bin share IDSK-PLUS
 
     - name: Calculate SHA-256
       id: sha256
