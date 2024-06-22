@@ -131,8 +131,8 @@ case "$1" in
         show_help
         ;;
     *)
-        echo -e "\n${RED}${BOLD}Command not supported.${NORMAL}" 1>&2
-        show_help
+        echo -e "\n${RED}Error:${NORMAL} Unknown command: $1" 1>&2
+        # show_help
         exit 1
         ;;
 esac

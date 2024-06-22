@@ -291,12 +291,12 @@ check_file_83() {
     
     # Verificar si el nombre y la extensión exceden los límites
     if [ ${#nombre} -gt 8 ]; then
-        log "ERROR" $nombre_archivo "File name does not support more than 8 characters."
+        log "ERROR" "The ${WHITE}$nombre_archivo${NORMAL} file name does not allow more than 8 characters."
         exit 1
     fi
 
     if [ ${#extension} -gt 3 ]; then
-        log "ERROR" $nombre_archivo "Extension name does not support more than 3 characters."
+        log "ERROR" "The extension name does not allow more than 3 characters in the ${WHITE}$nombre_archivo${NORMAL} file"
         exit 1
     fi
 }
@@ -314,12 +314,11 @@ check_file_83() {
 function add_file_to_disk_image {
    local DSK_IMAGE="$1"
    local ASCII_FILE="$2"
-    file=$(adjust_string "$ASCII_FILE")
     image=$(basename "$DSK_IMAGE")
    if iDSK "$DSK_IMAGE" -i "$ASCII_FILE" -t 0 > /dev/null 2>&1; then
-      log "OK" $file "File added to the disk image $image."
+      log "OK" "${WHITE}$file${NORMAL} file added to ${WHITE}$image${NORMAL} disk image."
    else
-      log "ERROR" $file "There was an error adding the file to the disk image."
+      log "ERROR" "Error adding ${WHITE}$file${NORMAL}file to ${WHITE}$image${NORMAL} disk image"
    fi
 }
 
@@ -336,7 +335,6 @@ function add_file_to_disk_image {
 function delete_comments {
     local archivo_origen="$1"
     local archivo_destino="$2"
-    file=$(adjust_string "$archivo_origen")
     if [[ "$(uname)" == "Darwin" ]]; then
         # macOS
         sed -E '/^1 '\''/d' "$archivo_origen" > "$archivo_destino"
@@ -344,7 +342,7 @@ function delete_comments {
         # Linux u otros sistemas
         sed '/^1 '\''/d' "$archivo_origen" > "$archivo_destino"
     fi
-    log "OK" $file "Comments removed from the file."
+    log "OK" "Deleted comments from the ${WHITE}$file${NORMAL} file."
 }
 
 ##
@@ -487,20 +485,26 @@ function compare_versions() {
 
 function log(){
   level="$1"
-  file="$2"
-  text="$3"
+  text="$2"
   # Ajustar la longitud de la segunda columna a 13 caracteres🚀
-  file=$(printf '%-12s' "$file")
+#   file=$(printf '%-12s' "$file")
 
   # Imprimir el mensaje formateado con el nivel y el archivo en los colores correspondientes
   if [ "$level" = "OK" ]; then
-      printf "%-1s ${WHITE}${BOLD}=>${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${WHITE}${BOLD}=>${NORMAL} %s\n" "🟩" "$file" "$text"
+      echo "${GREEN}${BOLD}[+]${NORMAL} $text"
+    #   printf "%-1s ${WHITE}${BOLD}=>${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${WHITE}${BOLD}=>${NORMAL} %s\n" "${GREEN}${BOLD}[+]${NORMAL}" "$file" "$text"
   elif [ "$level" = "WARNING" ]; then
-      printf "%-1s ${WHITE}${BOLD}=>${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${WHITE}${BOLD}=>${NORMAL} %s\n" "🟨" "$file" "$text"
+      echo "${YELLOW}${BOLD}[!]${NORMAL} $text"
+    #   printf "%-1s ${WHITE}${BOLD}=>${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${WHITE}${BOLD}=>${NORMAL} %s\n" "${YELLOW}${BOLD}[?]${NORMAL}" "$file" "$text"
   elif [ "$level" = "ERROR" ]; then
-      printf "%-1s ${WHITE}${BOLD}=>${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${WHITE}${BOLD}=>${NORMAL} %s\n" "🟥" "$file" "$text"
+      echo "${RED}${BOLD}[-]${NORMAL} $text"
+    #   printf "%-1s ${WHITE}${BOLD}=>${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${WHITE}${BOLD}=>${NORMAL} %s\n" "${RED}${BOLD}[-]${NORMAL}" "$file" "$text"
+  elif [ "$level" = "INFO" ]; then
+      echo "${BLUE}${BOLD}[*]${NORMAL} $text"
+    #   printf "%-1s ${WHITE}${BOLD}=>${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${WHITE}${BOLD}=>${NORMAL} %s\n" "${BLUE}${BOLD}[*]${NORMAL}" "$file" "$text"
   else
-      printf "%-7s ${BOLD}${WHITE}|${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${BOLD}${WHITE}|${NORMAL} %s\n" "⬜" "$file" "$text"
+    #   printf "%-7s ${BOLD}${WHITE}|${NORMAL} ${BLUE}${BOLD}%s${NORMAL} ${BOLD}${WHITE}|${NORMAL} %s\n" "⬜" "$file" "$text"
+    echo "${BLUE}${BOLD}[*]${NORMAL} $text"
   fi
 }
 

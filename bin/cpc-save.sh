@@ -78,7 +78,7 @@ mkdir -p "$OUT_FILES"
 ## Creamos imagen de disco
 create_disc_image $OUT_DISC/$DISC
 echo
-log "OK" "DISK" "Create disk image $DISC."
+log "OK" "DISK" "Created ${WHITE}$DISC${NORMAL} disk image."
 ## Si no pasamos parametro asumimos que hay que crear 
 ## la imagen DSK de todos los archivos de src
 if [ -z "$1" ]; then
@@ -89,13 +89,11 @@ if [ -z "$1" ]; then
             check_file_83 $file
             delete_comments "$archivo" "$OUT_FILES/$file"
             ## convert unix2dos
-            archive=$(adjust_string "$file")
             unix2dos $OUT_FILES/$file >/dev/null 2>&1
             if [ $? -eq 0 ]; then
-                # OK "$file" "Converting file to DOS format."
-                log "OK" "$file" "Converting file to DOS format."
+                log "OK" "Converted ${WHITE}$file${NORMAL} file to dos format."
             else
-                log "ERROR" "$file" "There was a problem converting the file to DOS format."
+                log "ERROR" "Error converting ${WHITE}$file${NORMAL} file to dos format."
                 exit 1
             fi
             ## add file to dsk image
@@ -111,17 +109,16 @@ else
         check_file_83 $file
         delete_comments "$SRC_FOLDER/$file" "$OUT_FILES/$file"
         ## convert unix2dos
-        archive=$(adjust_string "$file")
         unix2dos $OUT_FILES/$file >/dev/null 2>&1
         if [ $? -eq 0 ]; then
-            OK $file "Converting file to DOS format."
+            log "OK" "Converted ${WHITE}$file${NORMAL} file to dos format."
         else
-            ERROR $file "There was a problem converting the file to DOS format."
+            log "ERROR" "Error converting ${WHITE}$file${NORMAL} file to dos format."
         fi
         ## add file to dsk image
         add_file_to_disk_image $OUT_DISC/$DISC $OUT_FILES/$file
     else
-        ERROR $file "Not found."
+        ERROR $file "${WHITE}$file${NORMAL}Not found."
         exit 1
     fi
 fi
