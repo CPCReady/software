@@ -29,6 +29,7 @@ jobs:
       run: |
         VERSION=${{ github.event.inputs.version }}
         echo "Version: $VERSION"
+        echo "$VERSION" > share/VERSION
         echo "::set-output name=version::$VERSION"
         
     - name: compile CPCReady
