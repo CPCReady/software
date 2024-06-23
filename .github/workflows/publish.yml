@@ -10,6 +10,10 @@ on:
         description: si se crea release
         required: false
         default: 'false'
+      release_name:
+          description: Nombre de la release
+          required: false
+          default: 'Bug fix commands'
 
 jobs:
   publish-release:
@@ -50,6 +54,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: CPCReady-${{ steps.extract_version.outputs.version }}.tar.gz
+        release_name: "${{ github.event.inputs.release_name }}"
         asset_name: CPCReady-${{ steps.extract_version.outputs.version }}.tar.gz
         tag: ${{ steps.extract_version.outputs.version }}
         overwrite: true
