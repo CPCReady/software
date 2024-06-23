@@ -88,12 +88,12 @@ if [ "$result" == "true" ]; then
     result=$(check_path_existence "$RVM")
     if [ "$result" == "true" ]; then
         is_defined="true"
-        log "OK" "Emulator" "RetroVirtualMachine path is defined."
+        log "OK" "${WHITE}RetroVirtualMachine${NORMAL} path is defined."
     else
-        log "WARNING" "Emulator" "RetroVirtualMachine path is not defined."
+        log "WARNING" "${WHITE}RetroVirtualMachine${NORMAL} path is not defined."
     fi
 else
-    log "WARNING" "Emulator" "RetroVirtualMachine path is not defined."
+    log "WARNING" "${WHITE}RetroVirtualMachine${NORMAL} path is not defined."
 fi
 
 ## Definimos comando a ejecutar
@@ -104,24 +104,22 @@ else
     COMMAND=${COMMAND//\"/}
 fi
 
-# OK "CPC" "Model selected: $model"
-# OK "DISK" "Image Dsk: $disc"
-log "OK" "CPC" "Model Selected: $model"
-log "OK" "DSK" "Image Dsk: $disc"
+log "OK" "CPC Model Selected: ${WHITE}$model${NORMAL}"
+log "OK" "Image Dsk: ${WHITE}$disc${NORMAL}"
 
 if [ "$is_defined" == "true" ]; then
 
     "$RVM" -b=cpc"$model" -i "$OUT_DISC/$disc" -c="run\"$COMMAND\"\n" > /dev/null 2>&1 &
     ## Verifica el código de salida del comando
     if [ $? -ne 0 ]; then
-        log "ERRROR" "Emulator" "An error occurred while running the image in the emulator."
+        log "ERROR" "An error occurred while running the image in the emulator."
         exit 1
     fi
     OK "COMMAND" "Execute $COMMAND"
 else
     ## Creamos Retro Virtual Machen Web
     jinja2 --format=json "$HOMEBREW_PREFIX_SHARE/RetroVirtualMachine.j2" -D command="$COMMAND" -D project="$project" -D DISC="$OUT_DISC/$disc" > "RetroVirtualMachine.html"
-    log "WARNING" "Emulator" "RetroVirtualMachine generated in RetroVirtualMachine.html"
+    log "WARNING" "${WHITE}RetroVirtualMachine${NORMAL} generated in ${WHITE}RetroVirtualMachine.html${NORMAL}"
 fi
 
 TITLE=$(middle_tittle "Run image Successfully")
