@@ -32,12 +32,12 @@
 HOMEBREW_PREFIX=$(brew --prefix)
 source $HOMEBREW_PREFIX/bin/cpc-library.sh
 cpcready_logo
+CURRENT_VERSION=$(get_version)
 echo
 echo -e "${WHITE}${BOLD}CPCReady - The command line interface (CLI) for programming Locomotive Basic for Amstrad in Visual Studio Code${NORMAL}"  
 echo -e "${WHITE}© Destroyer 2024 - destroyer.dcf@gmail.com${NORMAL}"
 echo
-echo -e "${WHITE}Version: 1.0.0${NORMAL}"
-echo -e "${WHITE}CPCReady-Core Version: 1.0.0${NORMAL}"
+echo -e "${WHITE}Version: $CURRENT_VERSION${NORMAL}"
 echo -e "${GREEN}See ${BLUE}https://github.com/CPCReady/software${GREEN} for more information.${NORMAL}"
 echo
 
